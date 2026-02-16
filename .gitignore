@@ -1,5 +1,27 @@
-*
-!.gitignore
-!angular-shell/**
-!scripts/**
+# Ignore dependencies
+node_modules
+dist
+build
+.cache
+.tmp
 
+# Ignore environment & OS junk
+.env
+.DS_Store
+Thumbs.db
+
+# Allow all project folders
+!angular-shell/**
+!game12/**
+!quiz-game/**
+!Scramble-Words/**
+!scripts/**
+!Dockerfile
+!pnpm-workspace.yaml
+!package.json
+!pnpm-lock.yaml
+!nginx.conf
+!README.md
+!DEPLOYMENT.md
+!QUICKSTART.md
+!LICENSE

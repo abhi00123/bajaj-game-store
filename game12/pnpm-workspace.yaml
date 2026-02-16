@@ -1,0 +1,6 @@
+# pnpm workspace configuration
+packages:
+  - "angular-shell"
+  - "Scramble-Words"
+  - "game12"
+  - "quiz-game"

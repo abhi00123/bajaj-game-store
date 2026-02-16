@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Biologica Wellness Theme - Warm Off-White with Muted Brand Colors */
+        --background: 45 15% 97%;
+        /* #F9F7F4 - Warm off-white */
+        --foreground: 220 13% 18%;
+        /* #2D3748 - Charcoal */
+
+        --card: 45 15% 98%;
+        /* #FAFAF8 - Slightly lighter cream */
+        --card-foreground: 220 13% 18%;
+
+        --popover: 45 15% 98%;
+        --popover-foreground: 220 13% 18%;
+
+        --primary: 208 50% 50%;
+        /* #4A90C8 - Muted Soft Blue */
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 45 10% 92%;
+        /* Soft cream for secondary elements */
+        --secondary-foreground: 220 13% 18%;
+
+        --muted: 45 10% 90%;
+        --muted-foreground: 220 9% 46%;
+
+        --accent: 45 10% 88%;
+        --accent-foreground: 220 13% 18%;
+
+        --destructive: 0 65% 55%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 220 13% 85%;
+        /* #D4D8DD - Soft gray border */
+        --input: 220 13% 85%;
+        --ring: 208 50% 50%;
+
+        --radius: 9999px;
+        /* Full pill shape */
+
+<<<<<<< HEAD
+        /* Biologica Custom Variables */
+        --charcoal: #2D3748;
+        --cream: #FAFAF8;
+        --soft-gray: #E2E8F0;
+        --soft-blue: #4A90C8;
+        /* Muted version of #005DAC */
+        --soft-orange: #E89B6F;
+        /* Muted version of #FF6F00 */
+=======
+        /* Branding Custom Variables */
+        --brand-blue: #004282;
+        --brand-orange: #FF6F00;
+>>>>>>> decf841af1f901c626338d209c19962bc08d13cf
+    }
+
+    .dark {
+        /* Dark mode - keeping wellness aesthetic */
+        --background: 220 13% 12%;
+        --foreground: 45 15% 95%;
+
+        --card: 220 13% 14%;
+        --card-foreground: 45 15% 95%;
+
+        --popover: 220 13% 14%;
+        --popover-foreground: 45 15% 95%;
+
+        --primary: 208 50% 60%;
+        --primary-foreground: 220 13% 10%;
+
+        --secondary: 220 13% 18%;
+        --secondary-foreground: 45 15% 95%;
+
+        --muted: 220 13% 20%;
+        --muted-foreground: 45 10% 65%;
+
+        --accent: 220 13% 18%;
+        --accent-foreground: 45 15% 95%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 45 15% 95%;
+
+        --border: 220 13% 25%;
+        --input: 220 13% 25%;
+        --ring: 45 10% 70%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+}
+
+/* Biologica Wellness Button Styles */
+@layer components {
+    .btn-wellness {
+        @apply rounded-full border border-soft-gray bg-cream text-charcoal;
+        @apply px-6 py-3 font-medium transition-all duration-200;
+        @apply shadow-sm hover:shadow-md hover:bg-[#F5F5F3];
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-wellness:active,
+    .btn-wellness[data-selected="true"] {
+        @apply bg-[#EDEDEB] border-gray-400;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-wellness-primary {
+        @apply rounded-full bg-[var(--soft-blue)] text-white;
+        @apply px-6 py-3 font-medium transition-all duration-200;
+        @apply shadow-sm hover:shadow-md hover:brightness-95;
+    }
+
+    .btn-wellness-cta {
+        @apply rounded-full bg-[var(--soft-orange)] text-white;
+        @apply px-6 py-3 font-semibold transition-all duration-200;
+        @apply shadow-md hover:shadow-lg hover:brightness-95;
+    }
+}
+
+/* Custom transitions */
+.page-transition-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms, transform 300ms;
+}

@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 217 91% 60%;
+        /* Bajaj Blue Background */
+        --foreground: 0 0% 100%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 217 91% 60%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        --primary: 217 91% 60%;
+        /* Bajaj Blue */
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 32 95% 44%;
+        /* Corporate Orange */
+        --secondary-foreground: 0 0% 100%;
+
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        --accent: 32 95% 44%;
+        /* Orange Accent */
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217 91% 60%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 217 91% 60%;
+
+        --radius: 0px;
+        /* SHARP EDGES ONLY */
+
+        /* Branding Colors */
+        --brand-blue: #005eb8;
+        --brand-orange: #f58220;
+        --white: #ffffff;
+    }
+}
+
+@layer components {
+
+    /* Game Board Container Style */
+    .game-board {
+        @apply bg-white border-4 border-brand-blue p-6 relative;
+        box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Game Button Style */
+    .game-btn {
+        @apply bg-brand-blue text-white font-bold py-3 px-6 border-b-4 border-blue-900 active:border-b-0 active:translate-y-1 transition-all duration-75 uppercase tracking-wider;
+    }
+
+    .game-btn-orange {
+        @apply bg-brand-orange text-white font-bold py-3 px-6 border-b-4 border-orange-800 active:border-b-0 active:translate-y-1 transition-all duration-75 uppercase tracking-wider;
+    }
+
+    /* Game Option Tile Style */
+    .game-option {
+        @apply bg-white border-2 border-brand-blue text-brand-blue font-semibold p-4 w-full text-left sm:hover:bg-blue-50 transition-colors relative;
+    }
+
+    .game-option.selected {
+        @apply bg-brand-blue text-white border-blue-900;
+    }
+
+    /* Layout Helper */
+    .game-container {
+        @apply min-h-screen flex flex-col items-center justify-center p-4;
+        background: linear-gradient(135deg, #005eb8 0%, #003d7a 50%, #002855 100%);
+    }
+}
+
+html,
+body,
+#root {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #142B57 0%, #2E5590 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* Keep blue background for outer margins */
+}
+
+body {
+    @apply text-slate-900 antialiased selection:bg-brand-orange selection:text-white;
+}
+
+/* Typography Overrides */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply font-bold tracking-tight;
+}
+
+/* Custom transitions */
+.page-transition-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms, transform 300ms;
+}
+
+/* Utility classes */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+}
