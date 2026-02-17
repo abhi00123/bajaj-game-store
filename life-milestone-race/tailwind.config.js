@@ -17,6 +17,8 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+                game: ['Luckiest Guy', 'cursive'],
+                'game-body': ['Nunito', 'sans-serif'],
             },
             colors: {
                 'bajaj-blue': '#0066B2',

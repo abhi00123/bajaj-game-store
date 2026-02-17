@@ -1,27 +1,37 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { MapPin, ChevronRight } from 'lucide-react';
 import { LIFE_STAGES } from '../constants/lifeStages';
-import Button from '../../../components/ui/Button';
-import Card from '../../../components/ui/Card';
+
+/**
+ * Alignment pattern for zigzag map layout.
+ * Cards alternate: left → right → center → left → right
+ */
+const ALIGNMENT_PATTERN = ['justify-start', 'justify-end', 'justify-center', 'justify-start', 'justify-end'];
 
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+        transition: { staggerChildren: 0.1, delayChildren: 0.15 },
     },
 };
 
-const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+const cardVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { duration: 0.4, ease: [0.175, 0.885, 0.32, 1.275] },
+    },
 };
 
 /**
- * Stage selection screen.
- * Player picks their current life stage to begin the race from.
+ * Gamified stage selection screen — level-select map style.
+ * Zigzag card layout with glossy cards, ray burst background,
+ * SVG dashed path, and chunky 3D "BEGIN RACE" button.
+ * Responsive: compact on small screens, spacious on larger.
  */
 const StageSelection = memo(function StageSelection({ onSelectStage }) {
     const [selected, setSelected] = useState(null);
@@ -34,41 +44,77 @@ const StageSelection = memo(function StageSelection({ onSelectStage }) {
         if (selected) onSelectStage(selected);
     }, [selected, onSelectStage]);
 
-    return (
-        <motion.div
-            className="w-full flex flex-col items-center gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+    // Memoize the SVG path to avoid recalculation
+    const mapPath = useMemo(() => (
+        <svg
+            className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none"
+            fill="none"
+            viewBox="0 0 430 600"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
         >
-            {/* Header */}
-            <motion.div variants={itemVariants} className="text-center space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-race-surface border border-race-border text-[0.75rem] text-race-accent font-medium">
-                    <MapPin size={12} /> Choose Your Starting Point
-                </div>
-                <h2 className="race-subheading text-[1.5rem] text-white">
-                    Where are you in life?
-                </h2>
-                <p className="text-race-muted text-[0.875rem]">
-                    Select your current life stage to start the simulation
+            <path
+                d="M100 60 C 250 100, 350 150, 300 220 C 250 290, 100 320, 150 400 C 200 480, 350 500, 300 580"
+                stroke="white"
+                strokeWidth="8"
+                strokeDasharray="16 16"
+                strokeLinecap="round"
+                opacity="0.4"
+            />
+        </svg>
+    ), []);
+
+    return (
+        <div className="fixed inset-0 map-bg flex flex-col overflow-hidden">
+            {/* Ray burst background effect */}
+            <div className="ray-burst" aria-hidden="true" />
+
+            {/* Ambient glow orbs */}
+            <div className="absolute top-[5rem] -left-[2.5rem] w-[8rem] h-[8rem] bg-white/30 blur-2xl rounded-full z-0" aria-hidden="true" />
+            <div className="absolute bottom-[10rem] -right-[2.5rem] w-[12rem] h-[12rem] bg-yellow-200/20 blur-2xl rounded-full z-0" aria-hidden="true" />
+
+            {/* Header — compact on small screens */}
+            <motion.div
+                className="px-4 pt-8 sm:pt-12 pb-1 sm:pb-2 text-center z-20 flex-shrink-0"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+                <h1 className="font-game text-[1.75rem] sm:text-[2.25rem] text-white drop-shadow-lg tracking-wide leading-tight mb-0.5 uppercase">
+                    Select Your Stage
+                </h1>
+                <p className="text-blue-900 font-game-body font-black text-[0.625rem] sm:text-[0.6875rem] uppercase tracking-widest opacity-80">
+                    Tap a milestone to start the race
                 </p>
             </motion.div>
 
-            {/* Stage List */}
-            <div className="w-full space-y-3">
-                {LIFE_STAGES.map((stage) => {
+            {/* Stage map area — uses flex-1 + justify-evenly to distribute evenly */}
+            <motion.div
+                className="flex-1 relative z-10 px-4 sm:px-6 py-2 flex flex-col justify-evenly gap-0 max-w-[26.875rem] mx-auto w-full min-h-0"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {/* SVG dashed path connecting stages */}
+                {mapPath}
+
+                {/* Stage cards */}
+                {LIFE_STAGES.map((stage, index) => {
                     const isSelected = selected === stage.id;
+                    const alignment = ALIGNMENT_PATTERN[index] || 'justify-center';
+
                     return (
-                        <motion.div key={stage.id} variants={itemVariants}>
-                            <Card
-                                padding="none"
-                                className={`cursor-pointer transition-all duration-300 ${isSelected
-                                        ? 'border-race-accent glow-blue'
-                                        : 'hover:border-race-accent/50'
-                                    }`}
+                        <motion.div
+                            key={stage.id}
+                            variants={cardVariants}
+                            className={`flex ${alignment} w-full z-10`}
+                        >
+                            <div
+                                className={`glossy-card ${isSelected ? 'glossy-selected' : ''} w-[8.5rem] sm:w-[10rem] p-2 sm:p-3 rounded-2xl sm:rounded-3xl flex flex-col items-center gap-1 sm:gap-2 cursor-pointer`}
                                 onClick={() => handleSelect(stage.id)}
                                 role="radio"
                                 aria-checked={isSelected}
+                                aria-label={stage.label}
                                 tabIndex={0}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -77,61 +123,52 @@ const StageSelection = memo(function StageSelection({ onSelectStage }) {
                                     }
                                 }}
                             >
-                                <div className="flex items-center gap-4 p-4">
-                                    {/* Radio indicator */}
+                                {/* Emoji + check indicator */}
+                                <div className="relative">
+                                    <span className="text-[2.25rem] sm:text-[3rem] drop-shadow-md block leading-none">
+                                        {stage.emoji}
+                                    </span>
                                     <div
-                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${isSelected
-                                                ? 'border-race-accent bg-race-accent'
-                                                : 'border-race-muted'
+                                        className={`absolute -top-1 -right-1 w-[1.125rem] h-[1.125rem] sm:w-[1.375rem] sm:h-[1.375rem] rounded-full border-2 border-white flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-green-500' : 'bg-slate-200'
                                             }`}
                                     >
-                                        {isSelected && (
-                                            <div className="w-2 h-2 rounded-full bg-white" />
-                                        )}
+                                        <span
+                                            className={`material-symbols-outlined text-[0.625rem] sm:text-[0.75rem] font-bold ${isSelected ? 'text-white' : 'text-slate-400'
+                                                }`}
+                                        >
+                                            {isSelected ? 'check' : 'radio_button_unchecked'}
+                                        </span>
                                     </div>
-
-                                    {/* Stage info */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[1.25rem]">{stage.emoji}</span>
-                                            <span className="font-semibold text-white text-[1rem]">
-                                                {stage.label}
-                                            </span>
-                                        </div>
-                                        <p className="text-[0.8125rem] text-race-muted mt-0.5">
-                                            {stage.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Order badge */}
-                                    <span
-                                        className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[0.75rem] font-bold"
-                                        style={{ backgroundColor: `${stage.color}20`, color: stage.color }}
-                                    >
-                                        {stage.order}
-                                    </span>
                                 </div>
-                            </Card>
+
+                                {/* Stage label */}
+                                <span className="font-game-body font-black text-[0.6875rem] sm:text-[0.8125rem] uppercase tracking-tight text-slate-800">
+                                    {stage.label}
+                                </span>
+                            </div>
                         </motion.div>
                     );
                 })}
-            </div>
+            </motion.div>
 
-            {/* Confirm */}
-            <motion.div variants={itemVariants} className="w-full">
-                <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full"
-                    disabled={!selected}
+            {/* BEGIN RACE button — pinned to bottom */}
+            <motion.div
+                className="px-4 sm:px-6 pb-6 pt-2 z-20 max-w-[26.875rem] mx-auto w-full flex-shrink-0"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.5, ease: 'easeOut' }}
+            >
+                <button
+                    className="chunky-btn w-full bg-blue-600 hover:bg-blue-500 text-white font-game text-[1.25rem] sm:text-[1.5rem] py-4 sm:py-5 rounded-2xl sm:rounded-3xl flex items-center justify-center gap-2 active:scale-95 disabled:hover:bg-blue-600"
                     onClick={handleConfirm}
+                    disabled={!selected}
                     id="btn-confirm-stage"
                 >
-                    Begin Race
-                    <ChevronRight size={20} />
-                </Button>
+                    BEGIN RACE
+                    <span className="material-symbols-outlined text-[1.5rem] sm:text-[1.875rem]">chevron_right</span>
+                </button>
             </motion.div>
-        </motion.div>
+        </div>
     );
 });
 
