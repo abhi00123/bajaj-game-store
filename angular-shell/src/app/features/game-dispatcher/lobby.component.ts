@@ -503,7 +503,9 @@ export class LobbyComponent implements OnInit {
     'scramble-words': '🔤',
     'life-goals': '🎯',
     'quiz-game': '🧠',
+    'retirement-readiness-journey': '🚀',
   };
+
 
   constructor(
     private federationService: FederationService,

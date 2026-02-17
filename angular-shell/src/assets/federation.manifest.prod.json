@@ -48,5 +48,14 @@
     "popular": true,
     "gameId": "GAME_004",
     "assets": []
+  },
+  "retirement-readiness-journey": {
+    "remoteEntry": "assets/games/retirement-readiness-journey/index.js",
+    "exposedModule": "./GameEntry",
+    "type": "react",
+    "displayName": "Retirement Readiness",
+    "popular": true,
+    "gameId": "GAME_005",
+    "assets": []
   }
 }

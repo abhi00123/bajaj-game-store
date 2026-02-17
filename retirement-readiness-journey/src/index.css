@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px; /* 1rem = 16px */
+    @apply text-slate-800 antialiased;
+  }
+  
+  body {
+    @apply bg-white min-h-screen overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/30 shadow-xl rounded-2xl;
+  }
+  
+  .neon-ring {
+    @apply ring-1 ring-blue-500/20 ring-offset-2 ring-offset-white;
+  }
+  
+  .btn-hover {
+    @apply transition-transform duration-200 hover:scale-105 active:scale-95;
+  }
+}
+
+/* Custom transitions and animations */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
