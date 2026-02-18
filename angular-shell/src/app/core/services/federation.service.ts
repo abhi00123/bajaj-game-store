@@ -37,13 +37,40 @@ export class FederationService {
    * Called during app initialization via APP_INITIALIZER.
    */
   async loadManifest(): Promise<void> {
+    const startTime = performance.now();
     try {
+      console.log('[FederationService] 📥 Loading manifest from assets/federation.manifest.json...');
       this.manifest = await firstValueFrom(
         this.http.get<GameManifest>('assets/federation.manifest.json'),
       );
-      console.log('[FederationService] Manifest loaded:', this.manifest);
+      const duration = performance.now() - startTime;
+      
+      const gameCount = Object.keys(this.manifest).length;
+      const popularGames = Object.entries(this.manifest)
+        .filter(([_, entry]) => entry.popular)
+        .map(([id, _]) => id);
+      
+      console.log(`[FederationService] ✅ Manifest loaded successfully in ${duration.toFixed(2)}ms`);
+      console.log(`[FederationService] 📊 Manifest Summary:`);
+      console.log(`  • Total Games: ${gameCount}`);
+      console.log(`  • Popular Games: ${popularGames.length} - [${popularGames.join(', ')}]`);
+      
+      // Log details for each game
+      console.log(`[FederationService] 📋 Game Details:`);
+      Object.entries(this.manifest).forEach(([id, entry]) => {
+        console.log(`  • ${id}:`);
+        console.log(`    - Display Name: ${entry.displayName}`);
+        console.log(`    - Type: ${entry.type}`);
+        console.log(`    - Remote Entry: ${entry.remoteEntry}`);
+        console.log(`    - Exposed Module: ${entry.exposedModule}`);
+        console.log(`    - Assets: ${entry.assets?.length || 0}`);
+        console.log(`    - Popular: ${entry.popular}`);
+      });
     } catch (error) {
-      console.error('[FederationService] Failed to load manifest:', error);
+      const duration = performance.now() - startTime;
+      console.error(`[FederationService] ❌ Failed to load manifest in ${duration.toFixed(2)}ms:`, error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`[FederationService] Error Details: ${errorMsg}`);
       throw error;
     }
   }
@@ -52,7 +79,13 @@ export class FederationService {
    * Get manifest entry for a specific game
    */
   getGameManifest(gameId: string): GameManifestEntry | null {
-    return this.manifest?.[gameId] || null;
+    const entry = this.manifest?.[gameId] || null;
+    if (!entry) {
+      console.warn(`[FederationService] ⚠️  No manifest entry found for game: ${gameId}`);
+    } else {
+      console.log(`[FederationService] ✅ Retrieved manifest for game: ${gameId}`);
+    }
+    return entry;
   }
 
   /**
@@ -68,15 +101,17 @@ export class FederationService {
     const storeUrl = this.store.getConstructedGameUrl();
     if (storeUrl) {
       console.log(
-        `[FederationService] Using store URL for "${gameId}":`,
-        storeUrl,
+        `[FederationService] 🔗 Using store URL for game "${gameId}": ${storeUrl}`,
       );
       return storeUrl;
     }
 
     // ── Lobby / manifest fallback ──
     const entry = this.getGameManifest(gameId);
-    if (!entry) return null;
+    if (!entry) {
+      console.error(`[FederationService] ❌ Cannot construct game URL - no manifest entry for ${gameId}`);
+      return null;
+    }
 
     // Extract base path from remoteEntry
     // e.g., "/assets/games/scramble-words/index.js" → "/assets/games/scramble-words/"
@@ -86,8 +121,7 @@ export class FederationService {
     );
     const fallbackUrl = basePath + 'index.html';
     console.log(
-      `[FederationService] Using manifest URL for "${gameId}":`,
-      fallbackUrl,
+      `[FederationService] 🔗 Using manifest URL for game "${gameId}": ${fallbackUrl}`,
     );
     return fallbackUrl;
   }
@@ -96,24 +130,34 @@ export class FederationService {
    * Get all available games from the manifest
    */
   getAllGames(): GameManifestEntry[] {
-    if (!this.manifest) return [];
-    return Object.entries(this.manifest).map(
+    if (!this.manifest) {
+      console.warn('[FederationService] ⚠️  Manifest not loaded - cannot get games');
+      return [];
+    }
+    const games = Object.entries(this.manifest).map(
       ([id, entry]) =>
         ({
           ...entry,
           gameId: id,
         }) as GameManifestEntry,
     );
+    console.log(`[FederationService] 📋 Retrieved ${games.length} total games from manifest`);
+    return games;
   }
 
   /**
    * Get popular games for prefetching
    */
   getPopularGames(): string[] {
-    if (!this.manifest) return [];
-    return Object.entries(this.manifest)
+    if (!this.manifest) {
+      console.warn('[FederationService] ⚠️  Manifest not loaded - cannot get popular games');
+      return [];
+    }
+    const popularGames = Object.entries(this.manifest)
       .filter(([_, entry]) => entry.popular)
       .map(([id, _]) => id);
+    console.log(`[FederationService] ⭐ Found ${popularGames.length} popular games: [${popularGames.join(', ')}]`);
+    return popularGames;
   }
 
   /**
@@ -124,6 +168,7 @@ export class FederationService {
   resolveApiGameId(apiGameId: string): string {
     // If it already matches a manifest key directly, return it
     if (this.manifest?.[apiGameId]) {
+      console.log(`[FederationService] ✅ API ID "${apiGameId}" matches manifest key directly`);
       return apiGameId;
     }
 
@@ -132,7 +177,7 @@ export class FederationService {
       for (const [key, entry] of Object.entries(this.manifest)) {
         if (entry.gameId === apiGameId) {
           console.log(
-            `[FederationService] Resolved API ID "${apiGameId}" → "${key}"`,
+            `[FederationService] ✅ Resolved API ID "${apiGameId}" → "${key}"`,
           );
           return key;
         }
@@ -140,7 +185,7 @@ export class FederationService {
     }
 
     console.warn(
-      `[FederationService] No mapping found for API ID "${apiGameId}", using as-is`,
+      `[FederationService] ⚠️  No mapping found for API ID "${apiGameId}", using as-is`,
     );
     return apiGameId;
   }
