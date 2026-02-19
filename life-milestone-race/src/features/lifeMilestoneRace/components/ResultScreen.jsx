@@ -1,204 +1,359 @@
-import { memo, useState, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Phone, Calendar, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Phone, CheckCircle, Share2, RefreshCw, ChevronDown, ChevronUp, Calendar, X } from 'lucide-react';
+import Confetti from './Confetti';
 import Speedometer from './Speedometer';
 import TimelineSummary from './TimelineSummary';
-import BookingModal from './BookingModal';
+import { submitToLMS } from '../../../utils/api';
 
-/**
- * Result Screen Redesign.
- * Single page scrolling layout with Speedometer, Timeline, and CTAs.
- */
-const ResultScreen = memo(function ResultScreen({
+const ResultScreen = ({
     score,
-    finalScore,
+    finalScore, // Use finalScore as the main score prop
     userName,
+    userPhone,
     timeline,
     category,
     onRestart,
     gameId,
-    riskGaps
-}) {
-    const [isTimelineOpen, setIsTimelineOpen] = useState(false);
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    riskGaps,
+    onBookSlot
+}) => {
+    // Score handling
+    const displayScore = finalScore || score || 0;
 
-    // Derived logic for Score Ranges and Badge Styles
-    const { label: protectionLabel, subtext, badgeColor, textColor } = useMemo(() => {
-        // Ranges: 0-60 Low, 70-80 Medium, 90-100 High
-        if (finalScore >= 90) {
-            return {
-                label: 'HIGH PROTECTION',
-                subtext: "You're well prepared! Keep maintaining your financial safety net.",
-                badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                textColor: 'text-emerald-700'
+    const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+    const [showBooking, setShowBooking] = useState(false);
+
+    // Autofill Logic: If userPhone/userName changes, update form state? 
+    // Or just init. Since props might update late, use memo or effect?
+    // Usually standard useState init is enough if component mounts with data.
+    // If not, use useEffect.
+    const [formData, setFormData] = useState({
+        name: userName || '',
+        mobile: userPhone || '',
+        date: '',
+        time: ''
+    });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    // Form logic
+    const updateField = (field, val) => {
+        setFormData(p => ({ ...p, [field]: val }));
+        if (errors[field]) setErrors(p => ({ ...p, [field]: null }));
+    };
+
+    const validate = () => {
+        const errs = {};
+        if (!formData.name.trim()) errs.name = "Name is required";
+        else if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) errs.name = "Invalid name";
+
+        if (!formData.mobile) errs.mobile = "Mobile is required";
+        else if (!/^\d{10}$/.test(formData.mobile)) errs.mobile = "Invalid Mobile Number";
+
+        if (!formData.date) errs.date = "Required";
+        if (!formData.time) errs.time = "Required";
+
+        setErrors(errs);
+        return Object.keys(errs).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validate()) return;
+        setIsSubmitting(true);
+
+        try {
+            const payload = {
+                name: formData.name,
+                mobile_no: formData.mobile,
+                param4: formData.date,
+                param19: formData.time,
+                summary_dtls: "Life Milestone Race - Slot Booking",
+                p_data_source: "LIFE_MILESTONE_RACE_BOOKING"
             };
-        } else if (finalScore >= 70) {
-            return {
-                label: 'MEDIUM PROTECTION',
-                subtext: "Good foundation, but there's room to improve your coverage.",
-                badgeColor: 'bg-blue-100 text-blue-700 border-blue-200',
-                textColor: 'text-blue-700'
-            };
-        } else {
-            return {
-                label: 'LOW PROTECTION',
-                subtext: "Life moves faster than planning. Let's strengthen your protection.",
-                badgeColor: 'bg-orange-100 text-orange-700 border-orange-200',
-                textColor: 'text-orange-700'
-            };
+
+            const result = await submitToLMS(payload);
+
+            if (result.success) {
+                setShowBooking(false);
+                if (onBookSlot) onBookSlot(); // Correctly redirect to ThankYou
+            } else {
+                alert("Submission failed. Please try again.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong.");
+        } finally {
+            setIsSubmitting(false);
         }
-    }, [finalScore]);
+    };
 
     const handleShare = async () => {
-        const shareText = `Check LifeMilestone - Bajaj Life Insurance Game\nLifeMilestone Race\n${window.location.href}`;
+        const appBaseUrl = window.location.href;
         const shareData = {
             title: 'Life Milestone Race Score',
-            text: shareText,
-            url: window.location.href
+            text: `I scored ${displayScore}/100 in the Life Milestone Race! Check how prepared you are.`,
+            url: appBaseUrl
         };
 
         if (navigator.share) {
             try {
                 await navigator.share(shareData);
             } catch (err) {
-                console.log('Error sharing:', err);
+                console.log('Error:', err);
             }
         } else {
-            navigator.clipboard.writeText(shareText);
-            // Could add a toast here if strictly needed, but basic alert is fine for now
-            alert("Link copied to clipboard!");
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+                alert('Link copied!');
+            } catch (err) {
+                console.error(err);
+            }
         }
     };
 
-    const handleCall = () => {
-        window.location.href = 'tel:18002099999';
-    };
+    // Date Logic: "Must of this year only"
+    const today = new Date().toISOString().split("T")[0];
+    const endOfYear = new Date(new Date().getFullYear(), 11, 31).toISOString().split("T")[0];
+
+    // Styling logic - Transparent BG to use game theme, No Border
+    const ghibliCardClass = "relative w-full min-h-[100dvh] flex flex-col overflow-hidden max-w-[600px] mx-auto";
+    const ghibliContentClass = "relative z-10 w-full h-full flex flex-col py-4 px-4 sm:px-8 overflow-y-auto overflow-x-hidden custom-scrollbar";
 
     return (
-        <div className="w-full flex flex-col items-center gap-6 pb-12 animate-fade-in relative">
+        <div className={ghibliCardClass} style={{
+            background: "linear-gradient(180deg, #00509E 0%, #003366 100%)" // Deep Blue Game Theme
+        }}>
+            <Confetti />
 
             {/* Top Right Share Icon */}
             <button
                 onClick={handleShare}
-                className="absolute right-0 -top-2 p-2 bg-white/20 backdrop-blur-md rounded-full text-blue-900 border border-white/50 shadow-sm hover:bg-white/40 transition-all z-10"
+                className="absolute top-4 right-4 z-50 text-white/90 hover:text-white transition-opacity p-2"
             >
-                <Share2 size={20} />
+                <Share2 className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow-md" strokeWidth={2.5} />
             </button>
 
-            {/* Header Section */}
-            <div className="text-center space-y-1 mt-4">
-                <h1 className="text-2xl font-black text-blue-950 uppercase tracking-wider">
-                    Hi {userName || 'There'}!
-                </h1>
-                <p className="text-blue-900/60 text-sm font-bold tracking-widest uppercase">
-                    Your Score Is
-                </p>
+            {/* Background Pattern */}
+            <div className="absolute inset-0 z-0 pointer-events-none bg-cover bg-center opacity-60 mix-blend-overlay"
+                style={{ backgroundImage: 'linear-gradient(radial-gradient, circle at center, rgba(255,255,255,0.2) 0%, transparent 70%)' }}>
             </div>
 
-            {/* Speedometer Section */}
-            <div className="relative w-full flex flex-col items-center -mt-4">
-                <Speedometer score={finalScore} />
+            <div className={ghibliContentClass + " justify-between sm:justify-start"}>
 
-                {/* Score Badge & Label */}
-                <div className="flex flex-col items-center gap-3 -mt-4">
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border ${badgeColor} shadow-sm`}>
-                        {protectionLabel}
-                    </span>
-                    <p className={`text-center text-sm font-medium ${textColor} max-w-[280px] leading-relaxed`}>
-                        {subtext}
-                    </p>
-                </div>
-            </div>
+                {/* Header Section */}
+                <div className="text-center mb-1 shrink-0 mt-4">
+                    <h1 className="text-base sm:text-lg md:text-xl font-medium text-white uppercase tracking-wide italic mb-1">
+                        Hi <span className="ml-1 text-2xl sm:text-3xl md:text-4xl font-black">{userName || 'Player'}!</span>
+                    </h1>
+                    <h2 className="text-base sm:text-lg md:text-xl text-white uppercase tracking-wide italic mb-2">
+                        Your <span className="font-black text-lg sm:text-xl md:text-2xl text-[#FF8C00] drop-shadow-[0_0_10px_rgba(255,140,0,0.8)]">Life Milestone</span> score is
+                    </h2>
 
-            {/* Journey Toggle Section */}
-            <div className="w-full">
-                <button
-                    onClick={() => setIsTimelineOpen(!isTimelineOpen)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-between group active:scale-[0.98] transition-all"
-                >
-                    <span className="font-bold text-sm uppercase tracking-wide">View Your Journey</span>
-                    {isTimelineOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </button>
+                    {/* Speedometer */}
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-block transform scale-90 sm:scale-100 mb-2"
+                    >
+                        <Speedometer score={displayScore} />
+                    </motion.div>
 
-                <AnimatePresence>
-                    {isTimelineOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
+                    {/* View Journey Button - Opens Popup */}
+                    <div className="flex justify-center mt-2 mb-4 relative z-20">
+                        <button
+                            onClick={() => setIsTimelineOpen(true)}
+                            className="text-white/80 hover:text-white text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all"
                         >
-                            <div className="pt-4 px-1">
+                            View Journey <ChevronDown size={12} />
+                        </button>
+                    </div>
+
+                    {/* Share Button (Below Speedometer) */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="flex justify-center mt-1 sm:mt-2 mb-4"
+                    >
+                        <button
+                            onClick={handleShare}
+                            className="bg-gradient-to-r from-[#FF8C00] to-[#FF7000] hover:from-[#FF7000] hover:to-[#E65C00] text-white font-black py-2.5 px-8 shadow-[0_4px_0_#993D00] active:translate-y-1 active:shadow-none transition-all flex items-center gap-3 text-sm sm:text-base border-2 border-white/20 uppercase tracking-widest"
+                        >
+                            <Share2 className="w-5 h-5" /> SHARE
+                        </button>
+                    </motion.div>
+                </div>
+
+                {/* Form / CTA Area (White Card) */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-white p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/50 mb-3 shrink-0 rounded-sm"
+                >
+                    <p className="text-slate-600 text-[10px] sm:text-sm font-bold text-center mb-4 leading-relaxed">
+                        To know more, connect with our Relationship Manager.
+                    </p>
+
+                    {/* Call Action */}
+                    <a href="tel:1800209999" className="block w-full mb-4">
+                        <button className="w-full bg-[#0066B2] hover:bg-[#004C85] text-white font-black py-3 sm:py-4 shadow-[0_6px_0_#00335C] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest border-2 border-white/20">
+                            <Phone className="w-4 h-4 sm:w-5 sm:h-5" /> CALL NOW
+                        </button>
+                    </a>
+
+                    <div className="relative py-1 mb-3">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t-2 border-slate-50"></div></div>
+                        <div className="relative flex justify-center text-[8px] sm:text-xs uppercase"><span className="px-4 bg-white text-slate-400 font-black tracking-widest">Or</span></div>
+                    </div>
+
+                    {/* Booking Trigger Button */}
+                    <button
+                        onClick={() => setShowBooking(true)}
+                        className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-3 sm:py-4 shadow-[0_6px_0_#993D00] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest border-2 border-white/20"
+                    >
+                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5" /> BOOK A CONVENIENT SLOT
+                    </button>
+                </motion.div>
+
+                {/* Restart Option */}
+                <div className="shrink-0 text-center pb-2">
+                    <button
+                        onClick={onRestart}
+                        className="text-blue-100 hover:text-white text-[11px] sm:text-sm font-black uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 mx-auto drop-shadow-md"
+                    >
+                        <RefreshCw className="w-4 h-4" /> RETAKE QUIZ
+                    </button>
+                </div>
+
+            </div>
+
+            {/* Booking Modal Helper - Autofilled & Validated */}
+            {showBooking && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="bg-white p-6 w-full max-w-sm shadow-2xl relative border-4 border-white/50"
+                    >
+                        <button
+                            onClick={() => setShowBooking(false)}
+                            className="absolute right-4 top-4 text-slate-300 hover:text-slate-500 transition-colors bg-slate-100 p-1"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <h2 className="text-[#0066B2] font-black text-center mb-6 text-sm sm:text-base uppercase tracking-tight pt-2">Book a convenient slot</h2>
+
+                        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Your Name</label>
+                                <input
+                                    value={formData.name} onChange={e => updateField('name', e.target.value)}
+                                    className="w-full bg-slate-50 h-11 border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm font-bold px-4"
+                                    placeholder="Full Name"
+                                />
+                                {errors.name && <span className="text-[10px] text-red-500 ml-1 font-black uppercase tracking-wider">{errors.name}</span>}
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mobile Number</label>
+                                <input
+                                    value={formData.mobile}
+                                    onChange={e => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                        updateField('mobile', val);
+                                    }}
+                                    type="tel"
+                                    className="w-full bg-slate-50 h-11 border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm font-bold px-4"
+                                    placeholder="9876543210"
+                                />
+                                {errors.mobile && <span className="text-[10px] text-red-500 ml-1 font-black uppercase tracking-wider">{errors.mobile}</span>}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Preferred Date</label>
+                                    <input
+                                        type="date"
+                                        min={today}
+                                        max={endOfYear}
+                                        value={formData.date} onChange={e => updateField('date', e.target.value)}
+                                        className="w-full bg-slate-50 h-11 border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 text-xs font-bold px-4"
+                                    />
+                                    {errors.date && <span className="text-[10px] text-red-500 ml-1 font-black uppercase tracking-wider">{errors.date}</span>}
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Preferred Time</label>
+                                    <select
+                                        value={formData.time}
+                                        onChange={e => updateField('time', e.target.value)}
+                                        className="w-full bg-slate-50 h-11 border-2 border-slate-100 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-100 text-xs font-bold px-4 appearance-none"
+                                    >
+                                        <option value="">Select</option>
+                                        {[...Array(12)].map((_, i) => {
+                                            const start = 9 + i;
+                                            const end = start + 1;
+                                            const formatTime = (h) => {
+                                                const amp = h >= 12 ? 'PM' : 'AM';
+                                                const hour = h > 12 ? h - 12 : h;
+                                                return `${hour}:00 ${amp}`;
+                                            };
+                                            const label = `${formatTime(start)} - ${formatTime(end)}`;
+                                            return <option key={start} value={label}>{label}</option>;
+                                        })}
+                                    </select>
+                                    {errors.time && <span className="text-[10px] text-red-500 ml-1 font-black uppercase tracking-wider">{errors.time}</span>}
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-4 shadow-[0_6px_0_#993D00] active:translate-y-1 active:shadow-none transition-all uppercase tracking-widest text-sm mt-2 border-2 border-white/20"
+                            >
+                                {isSubmitting ? 'Confirming...' : 'Book a Slot'}
+                            </button>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Journey Details Popup Modal */}
+            <AnimatePresence>
+                {isTimelineOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                        onClick={() => setIsTimelineOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                            className="bg-white w-full max-w-md max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl relative flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="bg-[#0066B2] p-4 flex items-center justify-between shrink-0">
+                                <h3 className="text-white font-black text-lg uppercase tracking-wider">Your Journey</h3>
+                                <button onClick={() => setIsTimelineOpen(false)} className="text-white/80 hover:text-white transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="overflow-y-auto p-4 custom-scrollbar bg-slate-50 h-[450px]">
                                 <TimelineSummary timeline={timeline} onContinue={() => { }} />
                             </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* CTA Section */}
-            <div className="w-full space-y-4">
-                {/* Support Message */}
-                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 backdrop-blur-sm">
-                    <p className="text-blue-900/80 text-xs text-center font-medium leading-relaxed">
-                        &ldquo;To know more about insurance & saving products, please connect with our relationship manager.&rdquo;
-                    </p>
-                </div>
-
-                {/* Main Action Buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        onClick={handleCall}
-                        className="flex items-center justify-center gap-2 bg-gradient-to-br from-orange-500 to-orange-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-orange-500/20 active:translate-y-0.5 transition-all text-sm uppercase tracking-wide"
-                    >
-                        <Phone size={18} fill="currentColor" />
-                        Call Now
-                    </button>
-                    <button
-                        onClick={() => setIsBookingModalOpen(true)}
-                        className="flex items-center justify-center gap-2 bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/20 active:translate-y-0.5 transition-all text-sm uppercase tracking-wide"
-                    >
-                        <Calendar size={18} />
-                        Book A Slot
-                    </button>
-                </div>
-            </div>
-
-            {/* Try Again */}
-            <button
-                onClick={onRestart}
-                className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase tracking-widest transition-colors mt-4"
-            >
-                <RefreshCw size={14} />
-                Try Again
-            </button>
-
-            {/* Modals */}
-            <BookingModal
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                gameId={gameId}
-                score={finalScore}
-                category={category}
-                riskGaps={riskGaps}
-                initialName={userName}
-            />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
-});
-
-ResultScreen.displayName = 'ResultScreen';
-
-ResultScreen.propTypes = {
-    score: PropTypes.number,
-    finalScore: PropTypes.number,
-    userName: PropTypes.string,
-    timeline: PropTypes.array,
-    category: PropTypes.object,
-    onRestart: PropTypes.func,
-    gameId: PropTypes.string,
-    riskGaps: PropTypes.array
 };
 
 export default ResultScreen;

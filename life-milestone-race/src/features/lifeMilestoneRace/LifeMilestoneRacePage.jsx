@@ -14,127 +14,99 @@ import TimelineSummary from './components/TimelineSummary';
 import ConversionScreen from './components/ConversionScreen';
 import LeadForm from './components/LeadForm';
 import ThankYou from './components/ThankYou';
+import QuestionScreen from './components/QuestionScreen';
 import ResultScreen from './components/ResultScreen';
 
 const EVENT_TIMER_SECONDS = 10;
 
+// ... (Imports remain the same)
+
 /**
- * Feedback overlay shown between events — Bajaj branded.
+ * Feedback overlay shown as a POPUP on top of the screen.
  */
 const FeedbackOverlay = memo(function FeedbackOverlay({ feedback, onContinue }) {
     if (!feedback) return null;
 
     const isProtected = feedback.decision === 'protected';
+    const isPositive = feedback.delta > 0;
 
     return (
         <motion.div
-            className="w-full flex flex-col items-center gap-5 animate-fade-in"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
         >
-            <div
-                className="w-20 h-20 rounded-full flex items-center justify-center text-[2.5rem]"
+            <motion.div
+                className="w-[85%] max-w-[300px] rounded-[2rem] p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden ring-2 ring-white/10"
                 style={{
                     background: isProtected
-                        ? 'linear-gradient(135deg, rgba(255,140,0,0.2) 0%, rgba(255,102,0,0.1) 100%)'
-                        : 'linear-gradient(135deg, rgba(0,102,178,0.2) 0%, rgba(59,130,246,0.1) 100%)',
-                    boxShadow: isProtected
-                        ? '0 0 24px rgba(255, 140, 0, 0.3)'
-                        : '0 0 24px rgba(0, 102, 178, 0.3)',
+                        ? 'linear-gradient(145deg, #1e1b4b 0%, #431407 100%)' // Dark Blue to Dark Orange for Protected
+                        : 'linear-gradient(145deg, #1e1b4b 0%, #172554 100%)', // Dark Blue for Exposed
                 }}
+                initial={{ scale: 0.8, y: 50, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
             >
-                {isProtected ? '🛡️' : '⚠️'}
-            </div>
+                {/* Background Glows */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                    <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full blur-[40px] opacity-40 ${isProtected ? 'bg-orange-500' : 'bg-blue-500'}`} />
+                    <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full blur-[40px] opacity-20 bg-white" />
+                </div>
 
-            <div className="text-center space-y-2">
-                <p className="text-[1.25rem] font-black text-blue-950">
-                    {isProtected ? 'You\'re Protected!' : 'You\'re Exposed!'}
-                </p>
-                <p className="text-blue-900/70 text-[0.9375rem]">
+                {/* Circular Icon with Pulse */}
+                <div className="relative mb-3">
+                    <div className={`absolute inset-0 rounded-full blur-lg opacity-60 animate-pulse ${isProtected ? 'bg-orange-500' : 'bg-blue-500'}`} />
+                    <div
+                        className="w-16 h-16 rounded-full flex items-center justify-center text-[2.2rem] relative z-10 shadow-xl border-[4px] border-white/10"
+                        style={{
+                            background: isProtected
+                                ? 'linear-gradient(135deg, #fb923c 0%, #ea580c 100%)'
+                                : 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                        }}
+                    >
+                        {isProtected ? '🛡️' : '⚠️'}
+                    </div>
+                </div>
+
+                {/* Main Text */}
+                <h3 className="text-[1.4rem] font-black uppercase italic tracking-tighter mb-1 leading-none text-white drop-shadow-md relative z-10">
+                    {isProtected ? 'YOU\'RE PROTECTED!' : 'YOU\'RE EXPOSED!'}
+                </h3>
+
+                <p className="text-blue-100 font-bold leading-tight mb-4 text-[0.7rem] px-1 relative z-10 opacity-90">
                     {feedback.title}
                 </p>
-                <p
-                    className="text-[1.5rem] font-black"
+
+                {/* Score Update Circle */}
+                <div className="relative z-10 mb-5">
+                    <div className="flex flex-col items-center">
+                        <span className="text-white/60 text-[0.55rem] font-bold uppercase tracking-[0.2em] mb-0.5">Impact on Score</span>
+                        <div className={`text-[2.2rem] font-black leading-none flex items-center gap-1 ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                            {isPositive ? '+' : ''}{feedback.delta}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Continue Button */}
+                <motion.button
+                    onClick={onContinue}
+                    whileTap={{ scale: 0.96 }}
+                    className="w-full py-3 rounded-xl font-black text-white text-sm uppercase tracking-wide shadow-lg relative z-10 overflow-hidden group"
                     style={{
-                        color: isProtected ? '#FF8C00' : '#3B82F6',
+                        background: 'linear-gradient(90deg, #FFFFFF 0%, #F0F9FF 100%)',
+                        color: isProtected ? '#ea580c' : '#1e3a8a'
                     }}
                 >
-                    {feedback.delta > 0 ? '+' : ''}
-                    {feedback.delta} points
-                </p>
-            </div>
-
-            <motion.button
-                onClick={onContinue}
-                whileTap={{ scale: 0.97 }}
-                className="font-black text-white text-[1rem] uppercase tracking-wider px-8 py-3 rounded-xl mt-2"
-                style={{
-                    background: 'linear-gradient(135deg, #0066B2 0%, #3B82F6 100%)',
-                    boxShadow: '0 4px 0 #004A80, 0 0 16px rgba(0, 102, 178, 0.3)',
-                }}
-                id="btn-continue-race"
-            >
-                Continue →
-            </motion.button>
+                    <span className="relative z-10">CONTINUE</span>
+                    <div className="absolute inset-0 bg-white/50 opacity-0 group-hover:opacity-20 transition-opacity" />
+                </motion.button>
+            </motion.div>
         </motion.div>
     );
 });
 
-/**
- * Stage header with emoji, stage name, and "Financial Risk Ahead".
- */
-const StageHeader = memo(function StageHeader({ stageData, questionNumber }) {
-    if (!stageData) return null;
-
-    return (
-        <div className="w-full text-center space-y-0.5">
-            <div className="text-[2.5rem] leading-none mb-1 filter drop-shadow-sm">{stageData.emoji}</div>
-            <h2 className="text-[1.25rem] font-black text-blue-950 uppercase tracking-widest leading-none">
-                {stageData.label}
-            </h2>
-            <p className="text-[0.75rem] font-bold text-blue-900/60 uppercase tracking-wide">
-                Financial Risk Ahead
-            </p>
-        </div>
-    );
-});
-
-/**
- * Compact progress bar — shows question progress (X/5).
- */
-const RaceProgress = memo(function RaceProgress({ current, total, progress }) {
-    return (
-        <div className="w-full space-y-1">
-            <div className="flex justify-between items-end px-1">
-                <span className="text-[0.8rem] font-bold text-blue-950/80 uppercase tracking-wide">
-                    Question {current}/{total}
-                </span>
-                <span className="text-[0.8rem] font-bold text-blue-950/80">
-                    {progress}%
-                </span>
-            </div>
-            <div
-                className="w-full rounded-full overflow-hidden"
-                style={{
-                    height: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                    border: '1px solid rgba(255, 255, 255, 0.6)',
-                    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
-                }}
-            >
-                <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                        width: `${progress}%`,
-                        background: 'linear-gradient(90deg, #FF8C00 0%, #FF6600 100%)',
-                        boxShadow: '0 0 8px rgba(255, 140, 0, 0.5)',
-                    }}
-                />
-            </div>
-        </div>
-    );
-});
+// ... (StageHeader, RaceProgress remain but might be unused if we switch fully to QuestionScreen layout)
 
 /**
  * Main page for the Life Milestone Race feature.
@@ -159,6 +131,7 @@ const LifeMilestoneRacePage = memo(function LifeMilestoneRacePage() {
         riskGaps,
         progressPercent,
         userName,
+        userPhone,
         selectedStageData,
         startGame,
         selectStage,
@@ -192,47 +165,30 @@ const LifeMilestoneRacePage = memo(function LifeMilestoneRacePage() {
                 return <StageSelection key="stage-select" onSelectStage={selectStage} />;
 
             case GAME_PHASES.RACING:
-                return (
-                    <div key="racing" className="w-full h-full flex flex-col justify-center gap-3 animate-fade-in px-4 max-w-md mx-auto" style={{ padding: '1rem 0' }}>
-                        {/* Upper Section: Header + Progress + Meter */}
-                        <div className="flex flex-col gap-2 w-full">
-                            <StageHeader
-                                stageData={selectedStageData}
-                                questionNumber={currentEventIndex + 1}
-                            />
-
-                            <RaceProgress
-                                current={currentEventIndex + 1}
-                                total={eventQueue.length}
-                                progress={progressPercent}
-                            />
-
-                            <ProtectionMeter score={score} />
-                        </div>
-
-                        {/* Middle Section: Event Card (Focal Point) */}
-                        <div className="flex-1 flex items-center justify-center w-full py-2">
-                            <EventCard event={currentEvent} />
-                        </div>
-
-                        {/* Lower Section: Buttons + Timer */}
-                        <div className="w-full mt-auto">
-                            <DecisionButtons
-                                onDecision={makeDecision}
-                                timeLeft={timeLeft}
-                                timerProgress={timerProgress}
-                            />
-                        </div>
-                    </div>
-                );
-
             case GAME_PHASES.EVENT_FEEDBACK:
                 return (
-                    <FeedbackOverlay
-                        key="feedback"
-                        feedback={lastFeedback}
-                        onContinue={advanceToNextEvent}
-                    />
+                    <div className="w-full h-full relative">
+                        <QuestionScreen
+                            key="question-screen"
+                            stageData={selectedStageData}
+                            questionNumber={currentEventIndex + 1}
+                            totalQuestions={eventQueue.length}
+                            currentEvent={currentEvent}
+                            timeLeft={timeLeft}
+                            timerProgress={timerProgress}
+                            onDecision={makeDecision}
+                        />
+
+                        <AnimatePresence>
+                            {phase === GAME_PHASES.EVENT_FEEDBACK && (
+                                <FeedbackOverlay
+                                    key="feedback-popup"
+                                    feedback={lastFeedback}
+                                    onContinue={advanceToNextEvent}
+                                />
+                            )}
+                        </AnimatePresence>
+                    </div>
                 );
 
             case GAME_PHASES.FINISH:
@@ -240,7 +196,6 @@ const LifeMilestoneRacePage = memo(function LifeMilestoneRacePage() {
             case GAME_PHASES.TIMELINE:
             case GAME_PHASES.CONVERSION:
             case GAME_PHASES.LEAD_FORM:
-            case GAME_PHASES.THANK_YOU:
                 // Consolidated Result Screen
                 return (
                     <ResultScreen
@@ -248,13 +203,18 @@ const LifeMilestoneRacePage = memo(function LifeMilestoneRacePage() {
                         score={score}
                         finalScore={finalScore}
                         userName={userName}
+                        userPhone={userPhone}
                         timeline={timeline}
                         category={protectionCategory}
                         onRestart={restartGame}
                         gameId={gameId}
                         riskGaps={riskGaps}
+                        onBookSlot={handleLeadSuccess}
                     />
                 );
+
+            case GAME_PHASES.THANK_YOU:
+                return <ThankYou key="thank-you" onRestart={restartGame} userName={userName} />;
 
             default:
                 return null;

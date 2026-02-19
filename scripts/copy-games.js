@@ -12,7 +12,7 @@ fs.ensureDirSync(SHELL_GAMES_DIR);
 const games = [
   {
     name: 'scramble-words',
-    source: path.join(ROOT_DIR, 'Scramble-Words', 'dist'),
+    source: path.join(ROOT_DIR, 'scramble-words', 'dist'),
     destination: path.join(SHELL_GAMES_DIR, 'scramble-words')
   },
   {
@@ -37,18 +37,56 @@ const games = [
   }
 ];
 
+// Helper to robustly delete directories (fixes Windows ENOTEMPTY/EPERM issues)
+const robustRemove = (dirPath) => {
+  if (!fs.existsSync(dirPath)) return;
+
+  // Strategy 1: Simple Retry
+  const maxRetries = 3;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      fs.removeSync(dirPath);
+      return; // Success
+    } catch (err) {
+      // If it's the last retry, try Strategy 2
+      if (i === maxRetries - 1) break;
+
+      console.warn(`    ⚠️ Locking issue with ${path.basename(dirPath)}. Retrying (${i + 1}/${maxRetries})...`);
+      const start = Date.now();
+      while (Date.now() - start < 500) { } // Wait 500ms
+    }
+  }
+
+  // Strategy 2: Rename and Abandon (if delete failed)
+  try {
+    const trashPath = `${dirPath}_trash_${Date.now()}`;
+    fs.renameSync(dirPath, trashPath);
+    console.log(`    ⚠️ Moved locked folder to ${path.basename(trashPath)} to proceed.`);
+
+    // Try to delete the trash asynchronously (fire and forget)
+    fs.remove(trashPath).catch(() => { });
+    return;
+  } catch (renameErr) {
+    // If rename also fails, we can't do much.
+    console.error(`    ❌ Could not remove or move ${dirPath}. Please close any apps using it.`);
+    throw renameErr;
+  }
+};
+
 games.forEach(game => {
   console.log(`  ✓ Copying ${game.name}...`);
 
-  // Remove existing if present
-  if (fs.existsSync(game.destination)) {
-    fs.removeSync(game.destination);
-  }
+  // Remove existing if present using robust delete
+  robustRemove(game.destination);
 
   // Copy game build
   if (fs.existsSync(game.source)) {
-    fs.copySync(game.source, game.destination);
-    console.log(`    → ${game.destination}`);
+    try {
+      fs.copySync(game.source, game.destination);
+      console.log(`    → ${game.destination}`);
+    } catch (err) {
+      console.error(`    ❌ Failed to copy ${game.name}:`, err.message);
+    }
   } else {
     console.warn(`    ⚠ Warning: ${game.source} not found, skipping...`);
   }
