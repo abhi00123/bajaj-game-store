@@ -184,13 +184,13 @@ const GoalAssessmentScreen = ({
 
 
                         {/* Main Questions Container - Compact layout to fit single screen */}
-                        <div className="flex-1 flex flex-col justify-center items-center gap-0 sm:gap-3 w-full min-h-0 pb-4">
+                        <div className="assessment-container flex-1 flex flex-col justify-center items-center gap-0 sm:gap-3 w-full min-h-0 pb-4">
 
                             {/* Animation/Video - 3-layer containment to prevent clipping */}
                             {/* Layer 1: Safe Zone - NO overflow-hidden */}
                             <div className="w-full flex justify-center items-center flex-grow pt-2 sm:pt-8">
                                 {/* Layer 2: Frame - Size controller - Increased for better visibility */}
-                                <div className="relative w-[380px] h-[380px] sm:w-[400px] sm:h-[400px] md:w-[450px] md:h-[450px] flex items-center justify-center">
+                                <div className="goal-video-container relative w-[380px] h-[380px] sm:w-[400px] sm:h-[400px] md:w-[450px] md:h-[450px] flex items-center justify-center">
                                     {/* Layer 3: Animation - Constrained, NO absolute positioning */}
                                     <AnimatePresence mode='wait'>
                                         <motion.video
@@ -216,10 +216,10 @@ const GoalAssessmentScreen = ({
 
                             {/* Question Card - Increased padding and text size */}
                             <motion.div
-                                key={`${currentGoal.id}-${currentQuestionIndex}`}
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="w-full mx-0.5 sm:mx-1 md:mx-2 bg-white/95 backdrop-blur-sm p-3 sm:p-5 shadow-2xl border-4 border-white/50 text-center mb-2"
+                                key={`q-${currentQuestionIndex}`}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                className="question-card w-full mx-0.5 sm:mx-1 md:mx-2 bg-white/95 backdrop-blur-sm p-3 sm:p-5 shadow-2xl border-4 border-white/50 text-center mb-2"
                             >
                                 <h3 className="text-[#0066B2] text-lg sm:text-xl md:text-2xl font-black leading-snug drop-shadow-sm">
                                     {currentQuestion.text.replace(/this (life )?goal/gi, `"${currentGoal.name}"`)}
@@ -227,13 +227,13 @@ const GoalAssessmentScreen = ({
                             </motion.div>
 
                             {/* Action Buttons - Increased size */}
-                            <div className="w-full mx-0.5 sm:mx-1 md:mx-2 grid grid-cols-2 gap-3 sm:gap-5 mb-6">
+                            <div className="assessment-buttons w-full mx-0.5 sm:mx-1 md:mx-2 grid grid-cols-2 gap-3 sm:gap-5 mb-6">
                                 <button
                                     onClick={() => handleAnswer(true)}
                                     disabled={isAnswering}
-                                    className={`relative !py-3 sm:!py-4 !text-lg sm:!text-xl font-black transition-all border-4 uppercase tracking-widest active:translate-y-1 active:shadow-none shadow-[0_6px_0_rgba(0,0,0,0.2)] ${isAnswering && selectedAnswer === true
-                                        ? 'bg-[#FF8C00] border-[#FF8C00] text-slate-900 shadow-[0_6px_0_#993D00]'
-                                        : 'bg-white border-white/50 text-[#0066B2] hover:bg-slate-50'
+                                    className={`relative !py-3 sm:!py-4 !text-lg sm:!text-xl font-black transition-all uppercase tracking-widest ${isAnswering && selectedAnswer === true
+                                        ? 'bg-[#FF8C00] text-slate-900'
+                                        : 'bg-white text-[#0066B2] hover:bg-slate-50'
                                         }`}
                                 >
                                     YES
@@ -241,9 +241,9 @@ const GoalAssessmentScreen = ({
                                 <button
                                     onClick={() => handleAnswer(false)}
                                     disabled={isAnswering}
-                                    className={`relative !py-3 sm:!py-4 !text-lg sm:!text-xl font-black transition-all border-4 uppercase tracking-widest active:translate-y-1 active:shadow-none shadow-[0_6px_0_rgba(0,0,0,0.2)] ${isAnswering && selectedAnswer === false
-                                        ? 'bg-[#FF8C00] border-[#FF8C00] text-slate-900 shadow-[0_6px_0_#993D00]'
-                                        : 'bg-white border-white/50 text-[#0066B2] hover:bg-slate-50'
+                                    className={`relative !py-3 sm:!py-4 !text-lg sm:!text-xl font-black transition-all uppercase tracking-widest ${isAnswering && selectedAnswer === false
+                                        ? 'bg-[#FF8C00] text-slate-900'
+                                        : 'bg-white text-[#0066B2] hover:bg-slate-50'
                                         }`}
                                 >
                                     NO

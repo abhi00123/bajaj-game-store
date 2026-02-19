@@ -213,7 +213,7 @@ const WelcomeScreen = ({
                         transition={{ delay: 0.3, type: "spring", damping: 15 }}
                         src="./assets/images/character_woman-removebg-preview.png"
                         alt="Professional Woman"
-                        className="absolute bottom-[10px] min-[375px]:bottom-[15px] -left-12 min-[375px]:-left-20 h-[180px] min-[375px]:h-[230px] object-cover object-center z-30 drop-shadow-xl"
+                        className="char-woman absolute bottom-[10px] min-[375px]:bottom-[15px] -left-12 min-[375px]:-left-20 h-[180px] min-[375px]:h-[230px] object-cover object-center z-30 drop-shadow-xl"
                     />
 
                     <motion.img
@@ -222,7 +222,7 @@ const WelcomeScreen = ({
                         transition={{ delay: 0.3, type: "spring", damping: 15 }}
                         src="./assets/images/character_man-removebg-preview.png"
                         alt="Professional Man"
-                        className="absolute bottom-[10px] min-[375px]:bottom-[15px] -right-12 min-[375px]:-right-20 h-[190px] min-[375px]:h-[240px] object-cover object-center z-30 drop-shadow-xl"
+                        className="char-man absolute bottom-[10px] min-[375px]:bottom-[15px] -right-12 min-[375px]:-right-20 h-[190px] min-[375px]:h-[240px] object-cover object-center z-30 drop-shadow-xl"
                     />
                 </div>
 
