@@ -370,11 +370,16 @@ export default function GameScreen({ onEnd }) {
                         Hint ({3 - hintUsedCount})
                     </motion.button>
 
+                    {/* CHANGED: disabled once result is shown (isLocked) or transitioning to next word */}
                     <motion.button
                         onClick={handleReset}
-                        className="bg-white/10 backdrop-blur-md px-5 py-2 sm:px-10 sm:py-4 rounded-2xl border-b-4 border-white/20 text-white font-game text-lg sm:text-2xl uppercase tracking-widest hover:bg-white/20 transition-all shadow-lg"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        disabled={isLocked || isTransitioning}
+                        className={`bg-white/10 backdrop-blur-md px-5 py-2 sm:px-10 sm:py-4 rounded-2xl border-b-4 border-white/20 text-white font-game text-lg sm:text-2xl uppercase tracking-widest transition-all shadow-lg ${isLocked || isTransitioning
+                                ? 'opacity-40 cursor-not-allowed'
+                                : 'hover:bg-white/20'
+                            }`}
+                        whileHover={!(isLocked || isTransitioning) ? { scale: 1.05 } : {}}
+                        whileTap={!(isLocked || isTransitioning) ? { scale: 0.95 } : {}}
                     >
                         Reset
                     </motion.button>

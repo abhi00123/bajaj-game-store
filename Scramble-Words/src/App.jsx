@@ -28,6 +28,12 @@ function App() {
     setScreen('start');
   };
 
+  // ADDED: Skip the start/lead form and go directly to game — keeps userName intact
+  const replayGame = () => {
+    setScore(0);
+    setScreen('game');
+  };
+
   const showThankYou = () => {
     setScreen('thankyou');
   };
@@ -105,7 +111,8 @@ function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <ThankYou onHome={restartGame} firstName={userName} />
+            {/* onReplay goes to game directly; onHome goes back to start screen */}
+            <ThankYou onHome={restartGame} onReplay={replayGame} firstName={userName} />
           </motion.div>
         )}
       </AnimatePresence>

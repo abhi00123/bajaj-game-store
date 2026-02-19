@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Loader2 } from "lucide-react";
 import bgImg from "../assets/front-page/NewSartScreen.png";
@@ -12,8 +12,11 @@ export default function StartScreen({ onStart }) {
     const [showNamePopup, setShowNamePopup] = useState(false);
     const [userName, setUserName] = useState('');
     const [phone, setPhone] = useState('');
-    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(true); // Pre-checked by default
     const [showTerms, setShowTerms] = useState(false);
+
+    // Ref for programmatic focus management (name → phone on Enter)
+    const phoneInputRef = useRef(null);
 
     // Validation & Loading State
     const [errors, setErrors] = useState({});
@@ -23,25 +26,41 @@ export default function StartScreen({ onStart }) {
         setShowNamePopup(true);
     };
 
+    // Per-field validation — used on blur and Enter key
+    // Returns true if the field is valid
+    const validateField = (field, value) => {
+        if (field === 'name') {
+            if (!value.trim()) {
+                setErrors(prev => ({ ...prev, name: 'Please enter your name' }));
+                return false;
+            } else if (!/^[A-Za-z\s]+$/.test(value.trim())) {
+                setErrors(prev => ({ ...prev, name: 'Name must contain only letters' }));
+                return false;
+            }
+            setErrors(prev => ({ ...prev, name: '' }));
+            return true;
+        }
+
+        if (field === 'phone') {
+            if (!value) {
+                setErrors(prev => ({ ...prev, phone: 'Please enter mobile number' }));
+                return false;
+            } else if (!/^[6-9]\d{9}$/.test(value)) {
+                setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit mobile number' }));
+                return false;
+            }
+            setErrors(prev => ({ ...prev, phone: '' }));
+            return true;
+        }
+
+        return true;
+    };
+
+    // Full-form validation on submit
     const validateForm = () => {
-        const newErrors = {};
-
-        // Name Validation
-        if (!userName.trim()) {
-            newErrors.name = 'Please enter your name';
-        } else if (!/^[A-Za-z\s]+$/.test(userName.trim())) {
-            newErrors.name = 'Name must contain only letters';
-        }
-
-        // Phone Validation (Indian: 10 digits, starts with 6-9 usually)
-        if (!phone) {
-            newErrors.phone = 'Please enter mobile number';
-        } else if (!/^[6-9]\d{9}$/.test(phone)) {
-            newErrors.phone = 'Enter valid 10-digit mobile number';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        const nameValid = validateField('name', userName);
+        const phoneValid = validateField('phone', phone);
+        return nameValid && phoneValid;
     };
 
     const handleNameSubmit = async (e) => {
@@ -153,8 +172,8 @@ export default function StartScreen({ onStart }) {
                                 </div>
 
                                 <form onSubmit={handleNameSubmit} className="space-y-3 min-[375px]:space-y-4">
-                                    {/* Name Field */}
-                                    <div className="space-y-1 min-[375px]:space-y-1.5">
+                                    {/* Name Field — allows any input, validates on blur/submit */}
+                                    <div className="space-y-1 min-[375px]:space-y-1.5 text-left">
                                         <label className="block text-slate-700 text-[9px] min-[375px]:text-[10px] sm:text-xs font-black uppercase tracking-widest ml-1" htmlFor="userName">
                                             Your Name
                                         </label>
@@ -163,41 +182,48 @@ export default function StartScreen({ onStart }) {
                                             type="text"
                                             value={userName}
                                             onChange={(e) => {
-                                                const val = e.target.value;
-                                                // Only allow letters and spaces
-                                                if (/^[A-Za-z\s]*$/.test(val)) {
-                                                    setUserName(val);
-                                                    if (errors.name) setErrors({ ...errors, name: '' });
+                                                setUserName(e.target.value);
+                                                // Clear error only when value becomes valid
+                                                if (/^[A-Za-z\s]*$/.test(e.target.value)) {
+                                                    setErrors(prev => ({ ...prev, name: '' }));
+                                                }
+                                            }}
+                                            onBlur={(e) => validateField('name', e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    // Validate name first, then move focus to phone
+                                                    if (validateField('name', userName)) {
+                                                        phoneInputRef.current?.focus();
+                                                    }
                                                 }
                                             }}
                                             placeholder="Full Name"
-                                            className={`w-full px-3 py-2.5 min-[375px]:px-4 min-[375px]:py-3 sm:py-3.5 border-4 ${errors.name ? 'border-red-400 focus:border-red-500 bg-red-50' : 'border-slate-100 focus:border-[#0066B2]'} focus:outline-none focus:ring-4 focus:ring-[#0066B2]/10 text-slate-800 font-bold text-sm min-[375px]:text-base sm:text-lg transition-all rounded-lg`}
                                             autoFocus
+                                            className={`w-full px-3 py-2.5 min-[375px]:px-4 min-[375px]:py-3 sm:py-3.5 border-4 ${errors.name ? 'border-red-400 focus:border-red-500 bg-red-50' : 'border-slate-100 focus:border-[#0066B2]'} focus:outline-none focus:ring-4 focus:ring-[#0066B2]/10 text-slate-800 font-bold text-sm min-[375px]:text-base sm:text-lg transition-all rounded-lg`}
                                         />
                                         {errors.name && (
                                             <p className="text-red-500 text-[9px] min-[375px]:text-[10px] font-black uppercase tracking-wider ml-1">{errors.name}</p>
                                         )}
                                     </div>
 
-                                    {/* Phone Field */}
-                                    <div className="space-y-1 min-[375px]:space-y-1.5">
+                                    {/* Phone Field — numbers only, validates on blur/submit */}
+                                    <div className="space-y-1 min-[375px]:space-y-1.5 text-left">
                                         <label className="block text-slate-700 text-[9px] min-[375px]:text-[10px] sm:text-xs font-black uppercase tracking-widest ml-1" htmlFor="phone">
                                             Mobile Number
                                         </label>
                                         <input
+                                            ref={phoneInputRef}
                                             id="phone"
                                             type="tel"
                                             maxLength={10}
                                             value={phone}
                                             onChange={(e) => {
                                                 const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-
-                                                // Only allow validation if empty or starts with 6-9
-                                                if (val === '' || /^[6-9]/.test(val)) {
-                                                    setPhone(val);
-                                                    if (errors.phone) setErrors({ ...errors, phone: '' });
-                                                }
+                                                setPhone(val);
+                                                setErrors(prev => ({ ...prev, phone: '' }));
                                             }}
+                                            onBlur={(e) => validateField('phone', e.target.value)}
                                             placeholder="9876543210"
                                             className={`w-full px-3 py-2.5 min-[375px]:px-4 min-[375px]:py-3 sm:py-3.5 border-4 ${errors.phone ? 'border-red-400 focus:border-red-500 bg-red-50' : 'border-slate-100 focus:border-[#0066B2]'} focus:outline-none focus:ring-4 focus:ring-[#0066B2]/10 text-slate-800 font-bold text-sm min-[375px]:text-base sm:text-lg transition-all rounded-lg`}
                                         />
@@ -206,8 +232,8 @@ export default function StartScreen({ onStart }) {
                                         )}
                                     </div>
 
-                                    {/* Terms Checkbox */}
-                                    <div className="flex items-start space-x-3 pt-1">
+                                    {/* Terms Checkbox — pre-checked by default */}
+                                    <div className="flex items-start space-x-3 pt-1 text-left">
                                         <div className="relative flex items-center">
                                             <input
                                                 id="terms"
@@ -219,14 +245,22 @@ export default function StartScreen({ onStart }) {
                                             <Check className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100" strokeWidth={4} />
                                         </div>
                                         <label htmlFor="terms" className="text-[10px] sm:text-xs font-semibold text-slate-500 leading-tight select-none">
-                                            I agree to the <button type="button" onClick={() => setShowTerms(true)} className="text-[#0066B2] hover:underline font-bold inline">Term & condition</button> and Acknowledge the Privacy Policy.
+                                            I agree to the{' '}
+                                            <button type="button" onClick={() => setShowTerms(true)} className="text-[#0066B2] hover:underline font-bold inline">
+                                                Terms &amp; Conditions
+                                            </button>{' '}
+                                            and Acknowledge the Privacy Policy.
                                         </label>
                                     </div>
 
                                     <button
                                         type="submit"
                                         disabled={!userName.trim() || phone.length !== 10 || !termsAccepted || isSubmitting}
-                                        className="game-button-blue w-full py-2.5 min-[375px]:py-3 sm:py-4 rounded-xl font-game text-sm sm:text-lg tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                                        className="w-full py-2.5 min-[375px]:py-3 sm:py-4 rounded-xl font-game text-sm sm:text-lg tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 text-white uppercase font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #0066B2 0%, #3B82F6 100%)',
+                                            boxShadow: '0 4px 15px rgba(0, 102, 178, 0.3)'
+                                        }}
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -258,7 +292,7 @@ export default function StartScreen({ onStart }) {
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl border-4 border-[#0066B2] relative"
+                                className="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl border-4 border-[#0066B2] relative text-left"
                             >
                                 <button
                                     onClick={() => setShowTerms(false)}
@@ -266,7 +300,7 @@ export default function StartScreen({ onStart }) {
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
-                                <h3 className="text-[#0066B2] font-black text-lg uppercase mb-4 tracking-tight">Terms & Conditions</h3>
+                                <h3 className="text-[#0066B2] font-black text-lg uppercase mb-4 tracking-tight">Terms &amp; Conditions</h3>
                                 <div className="text-xs sm:text-sm text-slate-600 space-y-3 font-medium leading-relaxed max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                                     <p>
                                         I hereby authorize Bajaj Life Insurance Limited to call me on the contact number made available by me on the website with a specific request to call back. I further declare that, irrespective of my contact number being registered on National Customer Preference Register (NCPR) or on National Do Not Call Registry (NDNC), any call made, SMS or WhatsApp sent in response to my request shall not be construed as an Unsolicited Commercial Communication even though the content of the call may be for the purposes of explaining various insurance products and services or solicitation and procurement of insurance business.
