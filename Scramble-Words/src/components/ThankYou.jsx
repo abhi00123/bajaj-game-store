@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 
-export default function ThankYou({ onHome, firstName }) {
+// UPDATED: onReplay = go directly to game (skip name form)
+//          onHome   = go all the way back to the start/lead screen
+export default function ThankYou({ onHome, onReplay, firstName }) {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -33,13 +35,20 @@ export default function ThankYou({ onHome, firstName }) {
                         Our Relationship Manager will reach out to you shortly.
                     </p>
                 </div>
-            </div>
 
-            {/* Optional: Add a subtle way to return home if the user gets stuck, 
-                though the requirement said "No CTA button". 
-                I will omit it to strictly follow "No CTA button". 
-                If needed, it can be added back. 
-            */}
+                {/* ADDED: Play Again — jumps directly to the game/questions screen (skips name form) */}
+                <motion.button
+                    onClick={onReplay}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-4 px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-widest rounded-xl shadow-lg transition-all border-2 border-white/10"
+                >
+                    🔄 Play Again
+                </motion.button>
+            </div>
         </motion.div>
     );
 }

@@ -25,7 +25,8 @@ export default function ResultScreen({ score, onRestart, onThankYou, firstName }
         subtext = "You can do better.";
     } else if (finalScore === 1 || finalScore === 2) {
         heading = "Not up the mark";
-        subtext = "You can do it better.";
+        // FIXED: corrected from "You can do it better." to "You can do better."
+        subtext = "You can do better.";
     } else if (finalScore === 3) {
         heading = "Good";
         subtext = "You can do better.";
