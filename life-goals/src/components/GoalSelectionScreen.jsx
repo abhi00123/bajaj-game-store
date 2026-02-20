@@ -112,7 +112,7 @@ const GoalSelectionScreen = ({ onProceed }) => {
                             <div
                                 key={num}
                                 className={`w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 border-4 sm:border-[6px] flex items-center justify-center font-black text-base sm:text-xl transition-all ${selectedGoals.length >= num
-                                    ? 'bg-white border-white text-[#0066B2] shadow-[0_5px_15px_rgba(255,255,255,0.3)] scale-110'
+                                    ? 'bg-white border-white text-[#0066B2]'
                                     : 'bg-transparent border-white/30 text-white/50'
                                     }`}
                             >
@@ -127,7 +127,7 @@ const GoalSelectionScreen = ({ onProceed }) => {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="flex-1 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col mb-2 sm:mb-4 border-4 border-white/20 backdrop-blur-sm relative"
+                    className="flex-1 bg-white overflow-hidden flex flex-col mb-2 sm:mb-4 border-4 border-white/20 backdrop-blur-sm relative"
                 >
 
                     {/* Scrollable Goals Grid */}
@@ -150,8 +150,8 @@ const GoalSelectionScreen = ({ onProceed }) => {
                                         transition={{ delay: index * 0.05 }}
                                         onClick={() => toggleGoal(goal.id)}
                                         className={`relative p-3 sm:p-5 border-2 sm:border-4 transition-all duration-300 ${isSelected
-                                            ? 'bg-[#0066B2] border-[#0066B2] shadow-xl scale-105'
-                                            : 'bg-slate-50 border-slate-100 hover:border-[#0066B2]/30 hover:shadow-lg hover:scale-[1.02]'
+                                            ? 'bg-[#0066B2] border-[#0066B2]'
+                                            : 'bg-slate-50 border-slate-100 hover:border-[#0066B2]/30'
                                             }`}
                                     >
                                         {isSelected && (

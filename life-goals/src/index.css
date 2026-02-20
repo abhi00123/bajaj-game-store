@@ -78,12 +78,167 @@
     }
 
     /* Short Viewport Optimization (iPhone SE, etc.) */
-    @media (max-height: 700px) {
+    @media (max-height: 700px) and (max-width: 640px) {
         .ghibli-content {
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-            gap: 0.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            gap: 0.25rem;
         }
+
+        /* WelcomeScreen specific short-height fixes */
+        .ghibli-content h1 {
+            @apply text-xl !important;
+        }
+
+        .btn-primary-3d {
+            @apply py-2 !important;
+        }
+
+        /* Force visual area to shrink */
+        .min-h-\[250px\] {
+            min-height: 0 !important;
+        }
+
+        .my-4 {
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Clipboard and character scaling */
+        .max-w-\[240px\] {
+            max-width: 210px !important;
+        }
+
+        .mb-8 {
+            margin-bottom: 1rem !important;
+        }
+
+        .char-woman,
+        .char-man {
+            height: 210px !important;
+            bottom: 5px !important;
+        }
+    }
+
+    /* Target specific character placement for the fluid Ratio */
+    .fluid-mobile .char-woman {
+        left: -2.5rem !important;
+    }
+
+    .fluid-mobile .char-man {
+        right: -2.5rem !important;
+    }
+
+    /* GoalAssessmentScreen scroll fixes for .fluid-mobile */
+    .fluid-mobile .assessment-container {
+        @apply py-1 !important;
+        @apply pb-1 !important;
+        @apply gap-1 !important;
+    }
+
+    .fluid-mobile .assessment-container header {
+        @apply mb-1 !important;
+    }
+
+    .fluid-mobile .assessment-container h2.pt-8 {
+        @apply pt-2 !important;
+        /* Goal Title top padding */
+        @apply text-xl !important;
+    }
+
+    .fluid-mobile .goal-video-container {
+        @apply w-[280px] !important;
+        /* Video container size */
+        @apply h-[280px] !important;
+        @apply pt-0 !important;
+    }
+
+    .fluid-mobile .question-card {
+        @apply p-2 !important;
+        /* Question card padding */
+        @apply mb-1 !important;
+        @apply border-2 !important;
+    }
+
+    .fluid-mobile .question-card h3 {
+        @apply text-base !important;
+    }
+
+    .fluid-mobile .assessment-buttons {
+        @apply mb-2 !important;
+        /* Action buttons bottom margin */
+        @apply gap-2 !important;
+    }
+
+    .fluid-mobile .assessment-buttons button {
+        @apply !py-2 !important;
+        @apply !text-base !important;
+    }
+
+    /* ScoreResultsScreen scroll fixes for .fluid-mobile */
+    .fluid-mobile .results-container {
+        @apply py-1 !important;
+    }
+
+    .fluid-mobile .results-header {
+        @apply mb-1 !important;
+    }
+
+    .fluid-mobile .results-title {
+        @apply mb-0.5 !important;
+        @apply text-sm !important;
+    }
+
+    .fluid-mobile .results-subtitle {
+        @apply mb-1 !important;
+        @apply text-sm !important;
+    }
+
+    .fluid-mobile .speedometer-container {
+        @apply scale-[0.7] !important;
+        /* Scale down speedometer */
+        @apply -my-4 !important;
+        /* Pull content closer vertically */
+    }
+
+    .fluid-mobile .share-trigger-container {
+        @apply mt-0 !important;
+    }
+
+    .fluid-mobile .contact-box {
+        @apply p-2 !important;
+        /* Relationship manager box */
+        @apply mb-1 !important;
+        @apply border-2 !important;
+    }
+
+    .fluid-mobile .contact-box p {
+        @apply mb-2 !important;
+        @apply text-[10px] !important;
+    }
+
+    .fluid-mobile .contact-box a {
+        @apply mb-1 !important;
+    }
+
+    .fluid-mobile .contact-box button {
+        @apply !py-2 !important;
+        @apply !text-[10px] !important;
+    }
+
+    .fluid-mobile .results-divider {
+        @apply mb-1 !important;
+        @apply py-0 !important;
+    }
+
+    .fluid-mobile .restart-container {
+        @apply pb-1 !important;
+    }
+
+    .fluid-mobile .restart-container button {
+        @apply !py-2 !important;
+        @apply !px-4 !important;
+        @apply !text-xs !important;
     }
 
     @media (max-height: 600px) {
@@ -96,15 +251,13 @@
 
     /* 3D Button - Unified Premium Style */
     .btn-primary-3d {
-        @apply relative bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black transition-all uppercase tracking-widest border-2 border-white/20;
-        @apply shadow-[0_6px_0_#993D00] active:translate-y-1 active:shadow-none;
+        @apply relative bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black transition-all uppercase tracking-widest;
         @apply py-3 sm:py-4 px-6 text-base sm:text-lg;
     }
 
     /* 3D Button - White Secondary */
     .btn-secondary-3d {
-        @apply relative bg-white hover:bg-slate-50 text-slate-700 font-extrabold transition-all border-2 border-slate-100;
-        @apply shadow-[0_6px_0_#cbd5e1] active:translate-y-1 active:shadow-none;
+        @apply relative bg-white hover:bg-slate-50 text-slate-700 font-extrabold transition-all;
         @apply py-3 sm:py-4 px-6 text-base sm:text-lg;
     }
 

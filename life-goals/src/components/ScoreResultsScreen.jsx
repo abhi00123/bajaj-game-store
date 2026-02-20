@@ -103,15 +103,15 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
             <div className="bg-burst"></div>
 
             {/* Content Layer - justify-center for impact */}
-            <div className="ghibli-content justify-between sm:justify-center py-4 sm:py-8 min-h-0">
+            <div className="results-container ghibli-content justify-between sm:justify-center py-4 sm:py-8 min-h-0">
 
                 {/* Header Section - Heading above speedometer */}
-                <div className="text-center mb-3 sm:mb-4 shrink-0">
+                <div className="results-header text-center mb-3 sm:mb-4 shrink-0">
                     {/* Heading Text - Above Speedometer - Two lines */}
-                    <h1 className="text-base sm:text-lg md:text-xl font-medium text-white uppercase tracking-wide italic mb-2">
+                    <h1 className="results-title text-base sm:text-lg md:text-xl font-medium text-white uppercase tracking-wide italic mb-2">
                         Hi <span className="ml-1 text-2xl sm:text-3xl md:text-4xl font-black">{userName || 'Bajaj'}!</span>
                     </h1>
-                    <h2 className="text-base sm:text-lg md:text-xl text-white uppercase tracking-wide italic mb-3 sm:mb-4">
+                    <h2 className="results-subtitle text-base sm:text-lg md:text-xl text-white uppercase tracking-wide italic mb-3 sm:mb-4">
                         Your <span className="font-black text-lg sm:text-xl md:text-2xl text-[#FF8C00] drop-shadow-[0_0_10px_rgba(255,140,0,0.8)]">life goals</span> score is
                     </h2>
 
@@ -119,7 +119,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="inline-block transform scale-90 sm:scale-100"
+                        className="speedometer-container inline-block transform scale-90 sm:scale-100"
                     >
                         <Speedometer score={Math.round(score)} />
                     </motion.div>
@@ -129,11 +129,11 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex justify-center mt-2 sm:mt-3"
+                        className="share-trigger-container flex justify-center mt-2 sm:mt-3"
                     >
                         <button
                             onClick={handleShare}
-                            className="bg-gradient-to-r from-[#FF8C00] to-[#FF7000] hover:from-[#FF7000] hover:to-[#E65C00] text-white font-black py-2.5 px-8 shadow-[0_4px_0_#993D00] active:translate-y-1 active:shadow-none transition-all flex items-center gap-3 text-sm sm:text-base border-2 border-white/20 uppercase tracking-widest"
+                            className="bg-gradient-to-r from-[#FF8C00] to-[#FF7000] hover:from-[#FF7000] hover:to-[#E65C00] text-white font-black py-2.5 px-8 transition-all flex items-center gap-3 text-sm sm:text-base uppercase tracking-widest"
                         >
                             <Share2 className="w-5 h-5" /> SHARE
                         </button>
@@ -145,7 +145,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/50 mb-3 shrink-0"
+                    className="contact-box bg-white p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/50 mb-3 shrink-0"
                 >
                     <p className="text-slate-600 text-[10px] sm:text-sm font-bold text-center mb-4 leading-relaxed">
                         {Math.round(score) <= 35 && "Attention! Connect with our Relationship Manager to get started."}
@@ -156,12 +156,12 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
 
                     {/* Call Action */}
                     <a href="tel:1800209999" className="block w-full mb-4">
-                        <button className="w-full bg-[#0066B2] hover:bg-[#004C85] text-white font-black py-3 sm:py-4 shadow-[0_6px_0_#00335C] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest border-2 border-white/20">
+                        <button className="w-full bg-[#0066B2] hover:bg-[#004C85] text-white font-black py-3 sm:py-4 transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest">
                             <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5" /> CALL NOW
                         </button>
                     </a>
 
-                    <div className="relative py-1 mb-3">
+                    <div className="results-divider relative py-1 mb-3">
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t-2 border-slate-50"></div></div>
                         <div className="relative flex justify-center text-[8px] sm:text-xs uppercase"><span className="px-4 bg-white text-slate-400 font-black tracking-widest">Or</span></div>
                     </div>
@@ -169,17 +169,17 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                     {/* Booking Trigger Button */}
                     <button
                         onClick={() => setShowBooking(true)}
-                        className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-3 sm:py-4 shadow-[0_6px_0_#993D00] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest border-2 border-white/20"
+                        className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-3 sm:py-4 transition-all flex items-center justify-center gap-2 text-xs sm:text-base uppercase tracking-widest"
                     >
                         <Calendar className="w-4 h-4 sm:w-5 sm:h-5" /> BOOK A CONVENIENT SLOT
                     </button>
                 </motion.div>
 
                 {/* Restart Option */}
-                <div className="shrink-0 text-center pb-4">
+                <div className="restart-container shrink-0 text-center pb-4">
                     <button
                         onClick={onRestart}
-                        className="text-blue-100 hover:text-white text-sm sm:text-lg font-black uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-3 mx-auto drop-shadow-md py-4 px-8 border-2 border-white/20 bg-white/5 hover:bg-white/10 rounded-xl"
+                        className="text-blue-100 hover:text-white text-sm sm:text-lg font-black uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-3 mx-auto drop-shadow-md py-4 px-8 bg-white/5 hover:bg-white/10 rounded-xl"
                     >
                         <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" /> Retake Quiz
                     </button>
@@ -212,9 +212,9 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                         const val = e.target.value.replace(/[^A-Za-z\s]/g, '');
                                         updateField('name', val);
                                         if (!val.trim()) {
-                                            setErrors(prev => ({ ...p, name: "Name is required" }));
+                                            setErrors(prev => ({ ...prev, name: "Name is required" }));
                                         } else {
-                                            setErrors(prev => ({ ...p, name: null }));
+                                            setErrors(prev => ({ ...prev, name: null }));
                                         }
                                     }}
                                     className={`bg-slate-50 h-11 border-2 ${errors.name ? 'border-red-400' : 'border-slate-100'} text-slate-800 placeholder:text-slate-300 focus-visible:ring-blue-100 text-sm font-bold px-4`}
@@ -285,7 +285,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-4 shadow-[0_6px_0_#993D00] active:translate-y-1 active:shadow-none transition-all uppercase tracking-widest text-sm mt-2 border-2 border-white/20"
+                                className="w-full bg-[#FF8C00] hover:bg-[#FF7000] text-white font-black py-4 transition-all uppercase tracking-widest text-sm mt-2"
                             >
                                 {isSubmitting ? 'Confirming...' : 'Book a Slot'}
                             </button>

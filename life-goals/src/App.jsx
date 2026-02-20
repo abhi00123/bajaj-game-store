@@ -38,6 +38,8 @@ function App() {
         handleRestart
     } = useGameState();
 
+
+    const [useFixedMobile, setUseFixedMobile] = useState(false);
     const [scale, setScale] = useState(1);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -49,15 +51,24 @@ function App() {
             setIsMobile(mobileMode);
 
             if (mobileMode) {
-                const baseWidth = 390;
-                const baseHeight = 844;
-                const newScale = Math.min(
-                    width / baseWidth,
-                    height / baseHeight
-                );
-                setScale(newScale);
+                const aspectRatio = width / height;
+                // If screen is narrow/tall (like 390x844), use fixed scaling.
+                // If screen is shorter/wider (like 375x667), use fluid full-screen.
+                const needsFixed = aspectRatio < 0.5;
+                setUseFixedMobile(needsFixed);
+
+                if (needsFixed) {
+                    const baseWidth = 390;
+                    const baseHeight = 844;
+                    const newScale = Math.min(
+                        width / baseWidth,
+                        height / baseHeight
+                    );
+                    setScale(newScale);
+                }
             } else {
                 setScale(1);
+                setUseFixedMobile(false);
             }
         };
 
@@ -125,13 +136,12 @@ function App() {
         }
     };
 
-    if (isMobile) {
+    if (isMobile && useFixedMobile) {
         return (
             <div
                 className="fixed inset-0 flex items-center justify-center overflow-hidden"
                 style={{ background: 'linear-gradient(180deg, #142B57 0%, #2E5590 100%)' }}
             >
-                {/* Aspect Ratio Container (Mobile Only) - Seamless background */}
                 <div
                     className="relative overflow-hidden shrink-0"
                     style={{
@@ -141,7 +151,6 @@ function App() {
                         transformOrigin: 'center center',
                     }}
                 >
-                    {/* Main Content */}
                     <main className="w-full h-full relative">
                         <AnimatePresence mode="wait">
                             <Suspense fallback={null}>
@@ -150,7 +159,6 @@ function App() {
                         </AnimatePresence>
                     </main>
 
-                    {/* Success Toast Notification */}
                     {showSuccessToast && (
                         <SuccessToast
                             message={successMessage}
@@ -163,8 +171,8 @@ function App() {
     }
 
     return (
-        <div className="h-[100dvh] w-full bg-slate-900 flex items-center justify-center overflow-hidden relative">
-            {/* Standard Desktop Layout */}
+        <div className={`h-[100dvh] w-full bg-slate-900 flex items-center justify-center overflow-hidden relative ${isMobile && !useFixedMobile ? 'fluid-mobile' : ''}`}>
+            {/* Main Content Wrapper */}
             <main className="quiz-container max-w-full">
                 <AnimatePresence mode="wait">
                     <Suspense fallback={null}>
