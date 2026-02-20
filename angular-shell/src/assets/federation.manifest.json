@@ -58,13 +58,31 @@
     "gameId": "GAME_005",
     "assets": []
   },
+  "financial-match-arena": {
+    "remoteEntry": "assets/games/financial-match-arena/index.js",
+    "exposedModule": "./GameEntry",
+    "type": "react",
+    "displayName": "Financial Match Arena",
+    "popular": true,
+    "gameId": "GAME_006",
+    "assets": []
+  },
   "retirement-sudoku": {
     "remoteEntry": "assets/games/retirement-sudoku/index.js",
     "exposedModule": "./GameEntry",
     "type": "react",
     "displayName": "Retirement Sudoku",
     "popular": true,
-    "gameId": "GAME_006",
+    "gameId": "GAME_007",
+    "assets": []
+  },
+  "financial-tetris": {
+    "remoteEntry": "assets/games/financial-tetris/index.js",
+    "exposedModule": "./GameEntry",
+    "type": "react",
+    "displayName": "Financial Tetris",
+    "popular": true,
+    "gameId": "GAME_008",
     "assets": []
   }
 }
