@@ -82,6 +82,11 @@ const games = [
     source: path.join(ROOT_DIR, "life-flight", "dist"),
     destination: path.join(SHELL_GAMES_DIR, "life-flight"),
   },
+  {
+    name: "one-life",
+    source: path.join(ROOT_DIR, "one-life", "dist"),
+    destination: path.join(SHELL_GAMES_DIR, "one-life"),
+  },
 ];
 
 // Helper to robustly delete directories (fixes Windows ENOTEMPTY/EPERM issues)
@@ -267,6 +272,15 @@ const manifest = {
     displayName: "Life Snakes & Ladders",
     popular: true,
     gameId: "GAME_012",
+    assets: [],
+  },
+  "one-life": {
+    remoteEntry: "assets/games/one-life/index.js",
+    exposedModule: "./GameEntry",
+    type: "react",
+    displayName: "One Life",
+    popular: true,
+    gameId: "GAME_013",
     assets: [],
   }
 };
