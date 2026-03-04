@@ -79,10 +79,10 @@ const FinancialTetrisPage = () => {
     };
 
     const handleRestart = useCallback(() => {
-        resetGame();
-        resetTimer();
-        setGameStatus(GAME_STATUS.IDLE);
-    }, [resetGame, resetTimer, setGameStatus]);
+        resetGame(); // This sets status to PLAYING and initializes board
+        resetTimer(); // This resets the timer to 60s
+        // We removed setGameStatus(IDLE) so it starts playing immediately
+    }, [resetGame, resetTimer]);
 
     const handleBookSlot = useCallback(async (bookingInfo) => {
         const result = await submitToLMS({
