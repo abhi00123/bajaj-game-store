@@ -79,6 +79,13 @@ const ConversionScreen = ({ score, total = 2000, leadData, onRestart, onBookSlot
 
         if (!bookingData.date) {
             errs.date = "Select a date";
+        } else {
+            const selectedDate = new Date(bookingData.date);
+            const t = new Date();
+            t.setHours(0, 0, 0, 0);
+            if (selectedDate < t) {
+                errs.date = "Cannot be in the past";
+            }
         }
         if (!bookingData.timeSlot) {
             errs.timeSlot = "Select a slot";
@@ -209,6 +216,13 @@ const ConversionScreen = ({ score, total = 2000, leadData, onRestart, onBookSlot
                     <RotateCcw className="w-6 h-6 text-gray-500" />
                     <span>Play again</span>
                 </button>
+
+                {/* Disclaimer */}
+                <div className="w-full px-4 mb-2 mt-auto">
+                    <p className="text-[9px] sh:text-[8px] text-gray-500/80 leading-tight text-center font-medium">
+                        <span className="font-bold">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                    </p>
+                </div>
             </div>
 
             <AnimatePresence>
