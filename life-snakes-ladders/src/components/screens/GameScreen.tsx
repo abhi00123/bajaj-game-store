@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, Dice5 } from 'lucide-react';
-import { getCellXY } from '../../features/GameLogic';
+import { getCellXY, SNAKES } from '../../features/GameLogic';
 
 interface GameScreenProps {
     playerPosition: number;
@@ -9,6 +9,7 @@ interface GameScreenProps {
     isMoving: boolean;
     lastDice: number;
     message: string;
+    frozenSnakes: number[];
 }
 
 const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -19,7 +20,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onRoll,
     isMoving,
     lastDice,
-    message
+    message,
+    frozenSnakes
 }) => {
     const [isRolling, setIsRolling] = useState(false);
 
@@ -62,44 +64,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
                 boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
                 zIndex: 20,
             }}>
-                {/* Shield badge */}
-                <div>
-                    {hasShield ? (
-                        <div style={{
-                            background: 'rgba(255,255,255,0.18)',
-                            borderRadius: 20,
-                            padding: '5px 14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            fontSize: 11,
-                            fontWeight: 800,
-                            letterSpacing: '0.1em',
-                        }}>
-                            <Shield size={13} />
-                            PROTECTED
-                        </div>
-                    ) : (
-                        <div style={{
-                            background: 'rgba(255,102,0,0.22)',
-                            borderRadius: 20,
-                            padding: '5px 14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            fontSize: 11,
-                            fontWeight: 800,
-                            letterSpacing: '0.1em',
-                            color: '#FFB380',
-                        }}>
-                            <Shield size={13} />
-                            UNPROTECTED
-                        </div>
-                    )}
-                </div>
-
-                {/* Position counter */}
-                <div style={{ textAlign: 'right' }}>
+                {/* Position counter - Centered */}
+                <div style={{ textAlign: 'center', width: '100%' }}>
                     <p style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.12em', opacity: 0.65, margin: '0 0 1px' }}>Square</p>
                     <p style={{ fontSize: 22, fontWeight: 900, margin: 0, lineHeight: 1 }}>
                         {playerPosition}
@@ -144,6 +110,41 @@ const GameScreen: React.FC<GameScreenProps> = ({
                         }}
                     />
 
+                    {/* Render Frozen Snakes Overlays — simple shield icon on head */}
+                    {frozenSnakes && frozenSnakes.map(snakeId => {
+                        const cellXY = getCellXY(snakeId);
+
+                        return (
+                            <div key={`frozen-${snakeId}`} style={{
+                                position: 'absolute',
+                                left: `${cellXY.x}%`,
+                                bottom: `${cellXY.y}%`,
+                                width: '10%',
+                                height: '10%',
+                                zIndex: 12,
+                                pointerEvents: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <div style={{
+                                    background: '#004A80', /* Darker blue, fully opaque to block the head */
+                                    borderRadius: '50%',
+                                    width: '90%',  /* Large enough to fully block the head within the cell */
+                                    height: '90%',
+                                    border: '2px solid rgba(255, 255, 255, 0.8)',
+                                    boxShadow: '0 0 15px rgba(56, 189, 248, 0.9)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    animation: 'shieldPulse 1.5s ease-in-out infinite'
+                                }}>
+                                    <Shield size={18} color="#fff" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                                </div>
+                            </div>
+                        );
+                    })}
+
                     {/* Player token — absolutely on top of the image */}
                     <div style={{
                         position: 'absolute',
@@ -161,18 +162,15 @@ const GameScreen: React.FC<GameScreenProps> = ({
                             width: 28,
                             height: 28,
                             borderRadius: '50%',
-                            background: hasShield
-                                ? 'radial-gradient(circle, #60A5FA 0%, #2563EB 80%)'
-                                : 'radial-gradient(circle, #FF8533 0%, #CC4400 80%)',
-                            boxShadow: hasShield
-                                ? '0 0 12px 4px rgba(96,165,250,0.85), 0 2px 6px rgba(0,0,0,0.5)'
-                                : '0 0 12px 4px rgba(255,102,0,0.85), 0 2px 6px rgba(0,0,0,0.5)',
+                            background: 'radial-gradient(circle, #FF8533 0%, #CC4400 80%)',
+                            boxShadow: '0 0 12px 4px rgba(255,102,0,0.85), 0 2px 6px rgba(0,0,0,0.5)',
                             border: '2.5px solid rgba(255,255,255,0.8)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             animation: 'tokenPulse 1.8s ease-in-out infinite',
                         }}>
+                            {/* Option to still show shield icon on token if protected, but keeping it simple based on feedback: "keep the player as orange throughtout the game" */}
                             {hasShield && <Shield size={12} color="#fff" />}
                         </div>
                         {/* Ground shadow */}
@@ -224,20 +222,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
                     )}
                 </div>
 
-                {/* Message */}
-                <div style={{
-                    width: '100%',
-                    background: 'rgba(255,255,255,0.06)',
-                    borderRadius: 12,
-                    padding: '8px 14px',
-                    marginBottom: 12,
-                    textAlign: 'center',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                }}>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', margin: 0, fontStyle: 'italic', fontWeight: 600 }}>
-                        {lastDice === 0 ? "Ready to roll!" : `"${message}"`}
-                    </p>
-                </div>
+                {/* Message removed per user request */}
 
                 {/* Roll button */}
                 <button
@@ -267,23 +252,16 @@ const GameScreen: React.FC<GameScreenProps> = ({
                 </button>
             </div>
 
-            {/* Branding */}
-            <div style={{
-                textAlign: 'center',
-                padding: '6px 0',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.7)',
-            }}>
-                Bajaj Life Insurance
-            </div>
+            {/* Branding removed per user request */}
 
             <style>{`
                 @keyframes tokenPulse {
-                    0%, 100% { box-shadow: ${hasShield ? '0 0 12px 4px rgba(96,165,250,0.85)' : '0 0 12px 4px rgba(255,102,0,0.85)'}, 0 2px 6px rgba(0,0,0,0.5); }
-                    50%       { box-shadow: ${hasShield ? '0 0 20px 8px rgba(96,165,250,0.6)' : '0 0 20px 8px rgba(255,102,0,0.6)'}, 0 2px 6px rgba(0,0,0,0.5); }
+                    0%, 100% { box-shadow: 0 0 12px 4px rgba(255,102,0,0.85), 0 2px 6px rgba(0,0,0,0.5); }
+                    50%      { box-shadow: 0 0 20px 8px rgba(255,102,0,0.6), 0 2px 6px rgba(0,0,0,0.5); }
+                }
+                @keyframes shieldPulse {
+                    0%, 100% { box-shadow: 0 0 12px 3px rgba(56, 189, 248, 0.8), 0 2px 5px rgba(0,0,0,0.4); }
+                    50%      { box-shadow: 0 0 22px 8px rgba(56, 189, 248, 0.6), 0 2px 5px rgba(0,0,0,0.4); }
                 }
                 @keyframes bounceIn {
                     0% { transform: scale(0.8) translateY(10px); opacity: 0; }
@@ -297,6 +275,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
                 @keyframes spinDice {
                     from { transform: rotate(0deg); }
                     to   { transform: rotate(360deg); }
+                }
+                @keyframes iceShimmer {
+                    0%, 100% { background-position: -100% 0; opacity: 0.6; }
+                    50% { background-position: 200% 0; opacity: 1; }
                 }
             `}</style>
         </div>

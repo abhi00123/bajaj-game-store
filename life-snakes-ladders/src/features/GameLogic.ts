@@ -33,22 +33,31 @@ export interface GameState {
     isShieldOffer: boolean;
     gameHistory: number[];
     hadShieldAtEnd: boolean;
+    playerName?: string;
+    playerMobile?: string;
+    frozenSnakes: number[];
+    stats: {
+        snakesLanded: string[];
+        snakesAvoided: string[];
+        laddersClimbed: string[];
+    };
+    shieldBoughtOnCurrentTurn?: boolean;
 }
 
 export const BOARD_SIZE = 100;
 
 export const SNAKES: Record<number, Partial<Cell>> = {
     // Head position → tail position (matching the board image)
-    62: { target: 19, label: 'Unexpected Death of breadwinner', category: 'life', description: 'Your family must restart financially.', impactMsg: 'Your family must restart financially.', shieldMsg: 'Shield yourself with Term Insurance to secure your family’s future' },
-    95: { target: 75, label: 'Accidental Death', category: 'life', description: 'Accidental death can impact your family financial future', impactMsg: 'Accidental death can impact your family financial future', shieldMsg: 'Opt for Accidental Death Benefit Rider to enhance your protection' },
-    92: { target: 88, label: 'Minor Stroke / Recovery Period', category: 'health', description: 'Temporary income pause. Lifestyle downgraded.', impactMsg: 'Temporary income pause. Lifestyle downgraded', shieldMsg: 'Income rider maintains household stability' },
-    89: { target: 68, label: 'Spouse Critical Illness', category: 'health', description: 'Dual income collapses. Children’s plans disrupted.', impactMsg: 'Dual income collapses. Children’s plans disrupted.', shieldMsg: 'Opt for Critical Illness Rider to avoid financial burden on family' },
-    74: { target: 53, label: 'Health Crisis at 50', category: 'health', description: 'Medical bills drain retirement corpus.', impactMsg: 'Medical bills drain retirement corpus.', shieldMsg: 'Health + Term rider safeguards savings' },
-    64: { target: 60, label: 'Sudden Family Emergency', category: 'wealth', description: 'Unplanned expenses disrupt momentum.', impactMsg: 'Unplanned expenses disrupt momentum.', shieldMsg: 'Emergency cover cushions the shock' },
-    99: { target: 80, label: 'Major Financial Collapse', category: 'wealth', description: 'Business failure or debt crisis. Years of hard work erased.', impactMsg: 'Business failure or debt crisis. Years of hard work erased.', shieldMsg: 'Life + Liability cover protects assets. You recover without starting from zero' },
-    49: { target: 11, label: 'Critical Illness Diagnosis', category: 'health', description: 'Treatment expenses skyrocket. Investments liquidated. Goals delayed.', impactMsg: 'Treatment expenses skyrocket. Investments liquidated. Goals delayed.', shieldMsg: 'Opt for Critical Illness Rider to avoid financial burden on family' },
-    46: { target: 25, label: 'Disability due to accident', category: 'life', description: 'Disability puts your Financial Goals at Risk', impactMsg: 'Disability puts your Financial Goals at Risk', shieldMsg: 'Opt for Waiver of Premium Rider to secure your financial goals' },
-    16: { target: 6, label: 'Medical Emergency at Young Age', category: 'health', description: 'Unexpected hospitalization. Savings wiped before they even begin. Your financial journey restarts.', impactMsg: 'Unexpected hospitalization. Savings wiped before they even begin. Your financial journey restarts.', shieldMsg: 'Shield yourself with Care Plus Rider to avoid such shocks' },
+    62: { target: 19, label: 'Unexpected Death of breadwinner', category: 'life', description: 'Your family must restart financially', impactMsg: 'Your family must restart financially', shieldMsg: 'Shield yourself with Term Insurance to secure your family’s future' },
+    95: { target: 75, label: 'Accidental Death', category: 'life', description: 'Accidental death can impact your family financial future', impactMsg: 'Accidental death can impact your family financial future', shieldMsg: 'Opt for Accidental Death Benefit Shield to enhance your protection' },
+    92: { target: 88, label: 'Unexpected health care expenses', category: 'health', description: 'Temporary income pause. Lifestyle downgraded', impactMsg: 'Out of pocket expenses on health care', shieldMsg: 'Opt for Care Plus shield to manage such additional expenses' },
+    89: { target: 68, label: 'Spouse Critical Illness', category: 'health', description: 'Dual income collapses. Children’s plans disrupted', impactMsg: 'Dual income collapses. Children’s plans disrupted', shieldMsg: 'Opt for Critical Illness Shield to avoid financial burden on family' },
+    74: { target: 53, label: 'Health Crisis at 50', category: 'health', description: 'Medical bills drain retirement corpus', impactMsg: 'Medical bills drain retirement corpus', shieldMsg: 'Opt for Care Plus shield to safeguard your savings' },
+    64: { target: 60, label: 'Sudden Family Emergency', category: 'wealth', description: 'Unplanned expenses disrupt momentum', impactMsg: 'Unplanned expenses disrupt momentum', shieldMsg: 'Build Emergency fund to meet unplanned expenses' },
+    99: { target: 80, label: 'Major Financial Collapse', category: 'wealth', description: 'Business failure or Market Crises. Investment value eroded', impactMsg: 'Business failure or Market Crises. Investment value eroded', shieldMsg: 'Build Guaranteed Return Folio to protect your investments' },
+    49: { target: 11, label: 'Critical Illness Diagnosis', category: 'health', description: 'Treatment expenses skyrocket. Investments liquidated. Goals delayed', impactMsg: 'Treatment expenses skyrocket. Investments liquidated. Goals delayed.', shieldMsg: 'Opt for Critical Illness Shield to avoid financial burden on family' },
+    46: { target: 25, label: 'Disability due to accident', category: 'life', description: 'Disability puts your Financial Goals at Risk', impactMsg: 'Disability puts your Financial Goals at Risk', shieldMsg: 'Opt for Waiver of Premium Shield to secure your financial goals' },
+    16: { target: 6, label: 'Medical Emergency at Young Age', category: 'health', description: 'Unexpected hospitalization. Savings wiped before they even begin. Your financial journey restarts', impactMsg: 'Unexpected hospitalization. Savings wiped before they even begin. Your financial journey restarts.', shieldMsg: 'Shield yourself with Care Plus Rider to avoid such shocks' },
 };
 
 export const LADDERS: Record<number, Partial<Cell>> = {
@@ -67,6 +76,7 @@ export const LADDERS: Record<number, Partial<Cell>> = {
 };
 
 export const getCellData = (id: number): Cell => {
+    if (id <= 0) return { id: 0, type: 'normal', category: 'none' } as Cell;
     if (SNAKES[id]) {
         return { id, type: 'snake', category: 'none', ...SNAKES[id] } as Cell;
     }
@@ -77,6 +87,9 @@ export const getCellData = (id: number): Cell => {
 };
 
 export const getCellXY = (id: number) => {
+    if (id <= 0) {
+        return { x: -8, y: 0 };
+    }
     const index = id - 1;
     const row = Math.floor(index / 10);
     let col = index % 10;
@@ -93,4 +106,3 @@ export const getCellXY = (id: number) => {
         y: row * 10        // row 0 → bottom:0% (bottom-left), row 9 → bottom:90% (top)
     };
 };
-
