@@ -9,6 +9,7 @@ interface GameScreenProps {
     isMoving: boolean;
     lastDice: number;
     message: string;
+    frozenSnakes: number[];
 }
 
 const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -19,7 +20,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onRoll,
     isMoving,
     lastDice,
-    message
+    message,
+    frozenSnakes
 }) => {
     const [isRolling, setIsRolling] = useState(false);
 
@@ -143,6 +145,35 @@ const GameScreen: React.FC<GameScreenProps> = ({
                             borderRadius: 4,
                         }}
                     />
+
+                    {/* Render Frozen Snakes Overlays */}
+                    {frozenSnakes && frozenSnakes.map(snakeId => {
+                        const cellXY = getCellXY(snakeId);
+                        const overlayLeft = cellXY.x + 5;
+                        const overlayBottom = cellXY.y + 5;
+                        return (
+                            <div key={`frozen-${snakeId}`} style={{
+                                position: 'absolute',
+                                left: `${overlayLeft}%`,
+                                bottom: `${overlayBottom}%`,
+                                transform: 'translate(-50%, 50%)',
+                                zIndex: 5,
+                                pointerEvents: 'none',
+                                width: 44,
+                                height: 44,
+                                borderRadius: '50%',
+                                background: 'radial-gradient(circle, rgba(165,243,252,0.6) 0%, rgba(56,189,248,0.2) 70%, transparent 100%)',
+                                boxShadow: '0 0 16px 4px rgba(125,211,252,0.8), inset 0 0 10px rgba(255,255,255,0.8)',
+                                border: '1px solid rgba(224,242,254,0.3)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                animation: 'icePulse 2s ease-in-out infinite',
+                            }}>
+                                <span style={{ fontSize: 24, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}>❄️</span>
+                            </div>
+                        );
+                    })}
 
                     {/* Player token — absolutely on top of the image */}
                     <div style={{
@@ -297,6 +328,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
                 @keyframes spinDice {
                     from { transform: rotate(0deg); }
                     to   { transform: rotate(360deg); }
+                }
+                @keyframes icePulse {
+                    0%, 100% { transform: translate(-50%, 50%) scale(1); opacity: 0.85; }
+                    50% { transform: translate(-50%, 50%) scale(1.15); opacity: 1; }
                 }
             `}</style>
         </div>

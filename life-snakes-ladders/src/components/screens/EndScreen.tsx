@@ -3,7 +3,12 @@ import { Trophy, Shield, AlertTriangle, Share2 } from 'lucide-react';
 import LeadModal from '../modals/LeadModal';
 interface EndScreenProps {
     hasShield: boolean;
+    playerName?: string;
+    playerMobile?: string;
     onCTA: () => void;
+    onPlayAgain?: () => void;
+    onBookingSubmit?: (data: any) => void;
+    stats?: { snakesLanded: number; snakesAvoided: number; laddersClimbed: number; };
 }
 
 const T = {
@@ -21,8 +26,37 @@ const T = {
     goldLight: '#FFFBEB',
 };
 
-const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
+const EndScreen: React.FC<EndScreenProps> = ({ hasShield, playerName, playerMobile, onCTA, onPlayAgain, onBookingSubmit, stats }) => {
     const [showBookingModal, setShowBookingModal] = useState(false);
+    const [isStatsOpen, setIsStatsOpen] = useState(false);
+
+    const handleShare = async () => {
+        const appBaseUrl = (typeof window !== 'undefined')
+            ? new URL((import.meta as any).env.BASE_URL || './', window.location.href).href
+            : '/';
+
+        const shareData = {
+            title: 'Life Snakes & Ladders',
+            text: 'Check out Life Snakes & Ladders! Play the game and discover how prepared you are for your family\'s future.',
+            url: appBaseUrl
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            // Fallback
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+                alert('Link copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+    };
 
     return (
         <div style={{
@@ -34,7 +68,7 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
             color: T.white, position: 'relative'
         }}>
             {/* Top Right Share Icon */}
-            <button style={{
+            <button onClick={handleShare} style={{
                 position: 'absolute', top: 20, right: 20,
                 width: 36, height: 36, borderRadius: '50%',
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
@@ -47,7 +81,7 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
             {/* Header */}
             <div style={{ textAlign: 'center', marginBottom: 24, marginTop: 8 }}>
                 <p style={{ fontSize: 16, fontWeight: 900, color: '#FF7B00', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 6px' }}>
-                    Hi Username
+                    Hi {playerName || 'Username'}
                 </p>
                 <h1 style={{ fontSize: 22, fontWeight: 900, margin: 0, lineHeight: 1.2 }}>
                     "{hasShield ? 'You Finished Strong — Because You Planned.' : 'You Made It But it was Pure luck'}"
@@ -74,10 +108,39 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
                     : "In real life, luck doesn't always show up. Families fall behind when they lack protection"}
             </p>
 
+            {/* Stats Dropdown */}
+            {stats && (
+                <div style={{ width: '100%', maxWidth: 400, marginBottom: 24, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                    <button
+                        onClick={() => setIsStatsOpen(!isStatsOpen)}
+                        style={{ width: '100%', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', color: T.white, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                        <span>View Your Game Stats</span>
+                        <span style={{ transform: isStatsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>▼</span>
+                    </button>
+                    <div style={{ height: isStatsOpen ? 'auto' : 0, overflow: 'hidden', transition: 'max-height 0.3s ease-out' }}>
+                        <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(56, 189, 248, 0.1)', padding: '12px', borderRadius: 8, borderLeft: '4px solid #38BDF8' }}>
+                                <span style={{ color: '#E0F2FE', fontSize: 14, fontWeight: 600 }}>🟢 Snakes Avoided</span>
+                                <span style={{ color: '#bae6fd', fontSize: 18, fontWeight: 800 }}>{stats.snakesAvoided}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239, 68, 68, 0.1)', padding: '12px', borderRadius: 8, borderLeft: '4px solid #EF4444' }}>
+                                <span style={{ color: '#FEE2E2', fontSize: 14, fontWeight: 600 }}>🔴 Snakes Bitten</span>
+                                <span style={{ color: '#fca5a5', fontSize: 18, fontWeight: 800 }}>{stats.snakesLanded}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: 8, borderLeft: '4px solid #F59E0B' }}>
+                                <span style={{ color: '#FEF3C7', fontSize: 14, fontWeight: 600 }}>🟡 Ladders Climbed</span>
+                                <span style={{ color: '#fde68a', fontSize: 18, fontWeight: 800 }}>{stats.laddersClimbed}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Buttons Area */}
             <div style={{ width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {/* New Share Button replacing original CTA */}
-                <button onClick={onCTA} style={{
+                <button onClick={handleShare} style={{
                     width: '100%', padding: '15px 24px',
                     background: 'linear-gradient(135deg, #FF6600 0%, #E65C00 100%)',
                     color: '#fff', fontSize: 16, fontWeight: 800,
@@ -93,7 +156,7 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
                 </p>
 
                 {/* Call Now Button */}
-                <button style={{
+                <button onClick={() => window.location.href = 'tel:18001234567'} style={{
                     width: '100%', padding: '15px 24px',
                     background: '#b8c2d1', // silver/light gray
                     color: '#1A2340', fontSize: 16, fontWeight: 800,
@@ -114,7 +177,7 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
 
                 {/* Play Again text link */}
                 <div style={{ textAlign: 'center', marginTop: 16 }}>
-                    <button style={{
+                    <button onClick={onPlayAgain} style={{
                         background: 'none', border: 'none', color: '#fff',
                         fontSize: 14, fontWeight: 700, cursor: 'pointer',
                         textDecoration: 'none'
@@ -127,12 +190,14 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, onCTA }) => {
             {showBookingModal && (
                 <LeadModal
                     isBooking
+                    defaultValues={{ name: playerName, mobile: playerMobile }}
                     onClose={() => setShowBookingModal(false)}
                     onSubmit={(data) => {
                         console.log("Booking submitted with data:", data);
                         setShowBookingModal(false);
-                        // Can integrate proper LMS submission here similar to normal lead flow
-                        // For now just close the modal.
+                        if (onBookingSubmit) {
+                            onBookingSubmit(data);
+                        }
                     }}
                 />
             )}

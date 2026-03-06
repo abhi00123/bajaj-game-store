@@ -33,6 +33,14 @@ export interface GameState {
     isShieldOffer: boolean;
     gameHistory: number[];
     hadShieldAtEnd: boolean;
+    playerName?: string;
+    playerMobile?: string;
+    frozenSnakes: number[];
+    stats: {
+        snakesLanded: number;
+        snakesAvoided: number;
+        laddersClimbed: number;
+    };
 }
 
 export const BOARD_SIZE = 100;

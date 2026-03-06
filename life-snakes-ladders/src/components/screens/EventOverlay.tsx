@@ -75,7 +75,7 @@ const EventOverlay: React.FC<EventOverlayProps> = ({
                             'lsl-bg-ladder-gold'
                         } lsl-text-white`}
                 >
-                    {isSnake ? 'CONTINUE Without Shield' : 'CLIMB UP!'}
+                    {isProtected ? 'CONTINUE' : isSnake ? 'CONTINUE Without Shield' : 'CLIMB UP!'}
                 </button>
             </div>
 

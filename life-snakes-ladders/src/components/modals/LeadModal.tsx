@@ -3,8 +3,9 @@ import { X, Check, Loader2 } from 'lucide-react';
 
 interface LeadModalProps {
     onClose: () => void;
-    onSubmit: (data: { name: string; mobile: string; preferredTime?: string }) => void;
+    onSubmit: (data: { name: string; mobile: string; preferredTime?: string; preferredDate?: string }) => void;
     isBooking?: boolean;
+    defaultValues?: { name?: string; mobile?: string };
 }
 
 const T = {
@@ -19,10 +20,11 @@ const T = {
     errorLight: '#FEF2F2',
 };
 
-const LeadModal: React.FC<LeadModalProps> = ({ onClose, onSubmit, isBooking = false }) => {
-    const [name, setName] = useState('');
-    const [mobile, setMobile] = useState('');
+const LeadModal: React.FC<LeadModalProps> = ({ onClose, onSubmit, isBooking = false, defaultValues }) => {
+    const [name, setName] = useState(defaultValues?.name || '');
+    const [mobile, setMobile] = useState(defaultValues?.mobile || '');
     const [preferredTime, setPreferredTime] = useState('');
+    const [preferredDate, setPreferredDate] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(true);
     const [errors, setErrors] = useState<{ name?: string; mobile?: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +45,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ onClose, onSubmit, isBooking = fa
         // Small delay for UX feel
         await new Promise(r => setTimeout(r, 400));
         setIsSubmitting(false);
-        onSubmit({ name: name.trim(), mobile, preferredTime: isBooking ? preferredTime : undefined });
+        onSubmit({ name: name.trim(), mobile, preferredTime: isBooking ? preferredTime : undefined, preferredDate: isBooking ? preferredDate : undefined });
     };
 
     const inputStyle = (hasError?: boolean): React.CSSProperties => ({
@@ -168,6 +170,25 @@ const LeadModal: React.FC<LeadModalProps> = ({ onClose, onSubmit, isBooking = fa
                         {errors.mobile && <p style={{ fontSize: 12, color: T.error, margin: 0 }}>{errors.mobile}</p>}
                     </div>
 
+                    {/* Preferred Date (Booking mode only) */}
+                    {isBooking && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <label style={{ fontSize: 12, fontWeight: 800, color: T.textBold, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Preferred Date
+                            </label>
+                            <div>
+                                <input
+                                    type="date"
+                                    value={preferredDate}
+                                    style={inputStyle(false)}
+                                    // Set min date to today
+                                    min={new Date().toISOString().split('T')[0]}
+                                    onChange={e => setPreferredDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Preferred Time (Booking mode only) */}
                     {isBooking && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -223,19 +244,19 @@ const LeadModal: React.FC<LeadModalProps> = ({ onClose, onSubmit, isBooking = fa
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && !preferredTime)}
+                        disabled={!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && (!preferredTime || !preferredDate))}
                         style={{
                             width: '100%',
                             padding: '14px',
-                            background: (!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && !preferredTime)) ? T.blueSoft : T.blue,
-                            opacity: (!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && !preferredTime)) ? 0.6 : 1,
+                            background: (!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && (!preferredTime || !preferredDate))) ? T.blueSoft : T.blue,
+                            opacity: (!name.trim() || mobile.length !== 10 || !termsAccepted || isSubmitting || (isBooking && (!preferredTime || !preferredDate))) ? 0.6 : 1,
                             color: '#fff',
                             fontFamily: 'inherit',
                             fontSize: 16,
                             fontWeight: 700,
                             border: 'none',
                             borderRadius: 12,
-                            cursor: (!name.trim() || mobile.length !== 10 || !termsAccepted || (isBooking && !preferredTime)) ? 'not-allowed' : 'pointer',
+                            cursor: (!name.trim() || mobile.length !== 10 || !termsAccepted || (isBooking && (!preferredTime || !preferredDate))) ? 'not-allowed' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                             transition: 'background 0.2s, opacity 0.2s',
                             marginTop: 8,
