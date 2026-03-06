@@ -70,14 +70,34 @@ export default function ScoreScreen({ showToast }) {
         navigate(SCREENS.GAME);
     }
 
-    function handleShare() {
-        const text = `I scored ${scenarioData.scoreDisplay} in the Life Insurance Memory Game! Can you beat me? 🛡️`;
+    const handleShare = async () => {
+        // compute app base URL dynamically so share link works under any deployment subpath
+        const appBaseUrl = (typeof window !== 'undefined')
+            ? new URL(import.meta.env.BASE_URL || './', window.location.href).href
+            : '/';
+
+        const shareData = {
+            title: 'Insurance Match',
+            text: 'Check your Insurance match! Take the Insurance match memory game and discover how prepared you are for your insurance.',
+            url: appBaseUrl
+        };
+
         if (navigator.share) {
-            navigator.share({ title: 'My Game Score', text }).catch(() => { });
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
         } else {
-            navigator.clipboard.writeText(text).then(() => showToast?.('Score copied to clipboard!', 'success'));
+            // Fallback
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+                showToast?.('Link copied to clipboard!', 'success');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
         }
-    }
+    };
 
     return (
         <>
@@ -162,6 +182,10 @@ export default function ScoreScreen({ showToast }) {
                         <button className={styles.btnPlayAgainText} onClick={handlePlayAgain} id="btn-play-again">
                             Play Again
                         </button>
+
+                        <div className={styles.disclaimer}>
+                            <strong>Disclaimer:</strong> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                        </div>
                     </div>
 
                 </div>
