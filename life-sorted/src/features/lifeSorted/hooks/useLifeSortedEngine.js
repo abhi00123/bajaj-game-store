@@ -13,19 +13,25 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
     const [mistakes, setMistakes] = useState(0);
     const [history, setHistory] = useState([]);
     const [isWon, setIsWon] = useState(false);
+    const [levelLoaded, setLevelLoaded] = useState(-1);
 
-    // Initialize level
-    useEffect(() => {
+    const reset = useCallback(() => {
+        setIsWon(false);
         setTubes(generateInitialTubes(config));
         setSelectedTube(null);
         setMoves(0);
         setMistakes(0);
         setHistory([]);
-        setIsWon(false);
-    }, [config]);
+        setLevelLoaded(currentLevelIndex);
+    }, [config, currentLevelIndex]);
+
+    // Initialize level
+    useEffect(() => {
+        reset();
+    }, [reset]);
 
     const handleTubeClick = useCallback((index) => {
-        if (isWon) return;
+        if (isWon || levelLoaded !== currentLevelIndex) return;
 
         if (selectedTube === null) {
             if (tubes[index].length > 0) {
@@ -71,15 +77,13 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
                     }
 
                     // Check Shock Condition
-                    if (config.hasShock && !shockFired && moves + 1 >= 3) {
+                    if (config.hasShock && !shockFired && (moves + 1) >= 3) {
                         setTimeout(() => {
                             triggerShock();
                         }, 700);
                     }
 
                     // Check Win
-                    const categoriesCount = config.elementsToInclude.length / (config.capacity / 4);
-                    // Actually elementsToInclude is ID list. In our generator we have segments totaling to some categories.
                     const categoriesPresent = [...new Set(newTubes.flat().map(s => s.category))];
 
                     if (checkWin(newTubes, categoriesPresent.length, config.capacity)) {
@@ -99,7 +103,7 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
                 }
             }
         }
-    }, [tubes, selectedTube, config, isWon, moves, shockFired, triggerShock, onLevelWin, showToast]);
+    }, [tubes, selectedTube, config, isWon, moves, shockFired, triggerShock, onLevelWin, showToast, levelLoaded, currentLevelIndex]);
 
     const undo = useCallback(() => {
         if (history.length > 0) {
@@ -123,5 +127,7 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
         sortedCount,
         isWon,
         canUndo: history.length > 0,
+        levelLoaded,
+        reset
     };
 };

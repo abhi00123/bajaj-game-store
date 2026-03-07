@@ -38,14 +38,20 @@ const GameScreen = ({
             </div>
 
             {/* Level & Move Stats (Floating) */}
-            <div className="w-full max-w-md flex justify-between px-6 mb-12 mt-12 animate-fade-in">
-                <div className="flex flex-col">
-                    <span className="text-[0.65rem] uppercase tracking-widest text-white/40 font-bold">Level</span>
-                    <span className="text-xl font-bold text-gold">{currentLevel}</span>
+            <div className="w-full max-w-md flex justify-between px-8 mb-12 mt-12 animate-fade-in">
+                <div className="flex flex-col items-start">
+                    <span className="text-[0.6rem] uppercase tracking-[0.2em] text-white/30 font-bold mb-1">Level</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-2xl font-black text-gold drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]">{currentLevel}</span>
+                        <div className="h-1 w-4 bg-gold/20 rounded-full" />
+                    </div>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-[0.65rem] uppercase tracking-widest text-white/40 font-bold">Moves</span>
-                    <span className="text-xl font-bold text-white">{moves}</span>
+                    <span className="text-[0.6rem] uppercase tracking-[0.2em] text-white/30 font-bold mb-1">Moves</span>
+                    <div className="flex items-center gap-2">
+                        <div className="h-1 w-4 bg-white/10 rounded-full" />
+                        <span className="text-2xl font-black text-white">{moves}</span>
+                    </div>
                 </div>
             </div>
 

@@ -18,31 +18,31 @@ const LevelReport = ({ level, moves, mistakes, sorted, onNext }) => {
             <h2 className="text-3xl font-heading font-bold mb-2">Clarity Restored!</h2>
             <p className="text-white/50 text-sm mb-8">Level {level} completed. You're bringing balance to life.</p>
 
-            <Card className="w-full mb-10 space-y-4">
-                <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2 text-white/70">
-                        <TrendingUp size={16} />
-                        <span className="text-sm">Moves Made</span>
+            <Card className="w-full mb-10 space-y-4 bg-white/[0.02] border-white/10 backdrop-blur-xl shadow-2xl">
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                    <div className="flex items-center gap-3 text-white/50">
+                        <TrendingUp size={18} className="text-gold" />
+                        <span className="text-sm font-medium tracking-wide">Moves Made</span>
                     </div>
-                    <span className="font-bold text-white">{moves}</span>
+                    <span className="font-bold text-white text-lg">{moves}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2 text-white/70">
-                        <AlertCircle size={16} className="text-risk" />
-                        <span className="text-sm">Mis-sorts</span>
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                    <div className="flex items-center gap-3 text-white/50">
+                        <AlertCircle size={18} className="text-risk" />
+                        <span className="text-sm font-medium tracking-wide">Mis-sorts</span>
                     </div>
-                    <span className="font-bold text-white">{mistakes}</span>
+                    <span className="font-bold text-white text-lg">{mistakes}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-white/70">
-                        <div className="w-1.5 h-1.5 rounded-full bg-teal" />
-                        <span className="text-sm">Sorted Elements</span>
+                <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-3 text-white/50">
+                        <div className="w-2 h-2 rounded-full bg-teal shadow-[0_0_8px_rgba(45,212,191,0.5)]" />
+                        <span className="text-sm font-medium tracking-wide">Sorted Elements</span>
                     </div>
-                    <span className="font-bold text-teal">{sorted}</span>
+                    <span className="font-bold text-teal text-lg">{sorted}</span>
                 </div>
             </Card>
 
-            <Button fullWidth onClick={onNext} size="lg">
+            <Button fullWidth onClick={onNext} size="lg" className="shadow-lg shadow-teal/10 hover:shadow-teal/20 transition-all duration-300">
                 Proceed to Level {level + 1}
             </Button>
         </div>

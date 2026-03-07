@@ -8,7 +8,8 @@ const Segment = ({
     isBeingPoured = false,
     isFilling = false,
     tiltAngle = 0,
-    heightPct = 25 // Default for 4 slots
+    heightPct = 25,
+    isStreaming = false
 }) => {
     const baseColor = element.color;
 
@@ -20,24 +21,25 @@ const Segment = ({
             layout
             initial={isFilling ? { height: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
             animate={{
-                // FIXED: Use heightPct for consistent volume. Drainage shrinks to 0.
-                height: isBeingPoured ? 0 : `${heightPct}%`,
+                // ONLY drain/fill if streaming is active
+                height: (isStreaming && isBeingPoured) ? 0 : `${heightPct}%`,
                 opacity: (isBeingPoured && !isFilling) ? 0 : 1,
+                rotate: surfaceRotation,
                 transition: {
-                    height: {
-                        duration: 0.5,
-                        delay: isFilling ? 0.3 : 0,
-                        ease: "easeInOut"
-                    },
-                    opacity: { duration: 0.3 }
+                    height: { duration: 0.6, ease: "linear" },
+                    opacity: { duration: 0.3 },
+                    rotate: { duration: 0.3, ease: "easeInOut" }
                 }
             }}
             className={`relative w-full flex-shrink-0 flex items-center justify-center
-        ${isBottom ? 'rounded-b-[2rem]' : 'rounded-none'}
-      `}
+                ${isBottom ? 'rounded-b-[2rem]' : 'rounded-none'}
+            `}
             style={{
                 backgroundColor: baseColor,
-                marginBottom: '-1px', // close sub-pixel gap between segments
+                marginBottom: '-1px',
+                transformOrigin: 'center center',
+                scale: tiltAngle !== 0 ? 1.6 : 1, // Sharper scale for 75deg tilt
+                x: tiltAngle !== 0 ? (tiltAngle > 0 ? 2 : -2) : 0 // Subtle shift to center liquid during tilt
             }}
         >
 

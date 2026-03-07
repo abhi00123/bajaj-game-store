@@ -16,11 +16,11 @@ const Tube = ({
     pourOffset = null,
     pouringState = null
 }) => {
-    // Increased tilt angle for better visual match (65 degrees)
-    const tiltAngle = tiltDirection === 'right' ? 65 : -65;
+    // Sharper tilt for more "real" look
+    const tiltAngle = tiltDirection === 'right' ? 75 : -75;
 
-    // FIXED: Tilting should ONLY happen if this specific tube is the one pouring
-    const isCurrentlyTilting = isPouring && (pouringState?.isStreaming || false);
+    // FIXED: Tilting should start as soon as the tube is in pouring mode
+    const isCurrentlyTilting = isPouring;
 
     const movedCount = pouringState?.movedCount || 0;
     const movedColor = pouringState?.movedColor;
@@ -31,11 +31,11 @@ const Tube = ({
                 rotate: isCurrentlyTilting ? tiltAngle : 0,
                 y: isPouring ? (pourOffset?.y || -60) : (isSelected ? -6.4 : 0),
                 x: isPouring ? (pourOffset?.x || 0) : 0,
-                zIndex: (isPouring || isCurrentlyTilting) ? 100 : (isSelected ? 10 : 1)
+                zIndex: isPouring ? 100 : (isSelected || isBeingPouredInto ? 20 : 1)
             }}
             style={{ transformOrigin: 'top center' }}
             transition={{
-                rotate: { duration: 0.25, ease: "easeOut" },
+                rotate: { duration: 0.3, ease: "easeInOut" },
                 x: { duration: 0.4, ease: "easeInOut" },
                 y: { duration: 0.4, ease: "easeInOut" },
                 zIndex: { duration: 0 }
@@ -69,6 +69,7 @@ const Tube = ({
                                 isBeingPoured={isSourceSegmentBeingPoured}
                                 tiltAngle={isCurrentlyTilting ? tiltAngle : 0}
                                 heightPct={100 / capacity}
+                                isStreaming={pouringState?.isStreaming}
                             />
                         );
                     })}
@@ -83,15 +84,24 @@ const Tube = ({
                             isFilling={true}
                             tiltAngle={0}
                             heightPct={100 / capacity}
+                            isStreaming={pouringState?.isStreaming}
                         />
                     ))}
                 </AnimatePresence>
 
-                {/* Filling Splash Ripple Effect - Dynamic position based on current height */}
+                {/* Filling Splash Ripple Effect - Sync with top filling segment */}
                 {isBeingPouredInto && (pouringState?.isStreaming) && (
-                    <div
+                    <motion.div
+                        initial={{ opacity: 0, bottom: `${segments.length * (100 / capacity)}%` }}
+                        animate={{
+                            opacity: 1,
+                            bottom: `${(segments.length + movedCount) * (100 / capacity)}%`
+                        }}
+                        transition={{
+                            bottom: { duration: 0.6, ease: "linear", delay: 0.2 },
+                            opacity: { duration: 0.2, delay: 0.2 }
+                        }}
                         className="splash-ripple"
-                        style={{ bottom: `${(segments.length + movedCount - 0.5) * (100 / capacity)}%` }}
                     />
                 )}
             </div>

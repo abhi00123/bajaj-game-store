@@ -1,13 +1,50 @@
 import React from 'react';
 
-const GameLayout = ({ children, headerRight, footer, showTitle = true }) => {
+const GameLayout = ({ children, headerRight, footer, showTitle = true, variant = 'default', mainClassName = '' }) => {
+    const renderBackground = () => {
+        if (variant === 'welcome') {
+            return (
+                <div className="fixed inset-0 z-0 bg-black">
+                    <img
+                        src="./src/assets/ls-bg.png"
+                        alt="Background"
+                        className="w-full h-full object-fill"
+                    />
+                </div>
+            );
+        }
+
+        if (variant === 'black') {
+            return <div className="fixed inset-0 z-0 bg-black" />;
+        }
+
+        if (variant === 'gradient') {
+            return (
+                <div
+                    className="fixed inset-0 z-0 bg-[#0f172a]"
+                    style={{
+                        backgroundImage: `
+                            radial-gradient(circle at 15% 50%, rgba(30, 58, 138, 0.4), transparent 50%),
+                            radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.15), transparent 50%)
+                        `
+                    }}
+                />
+            );
+        }
+
+        return (
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-[#050505]">
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-teal/5 blur-[140px] rounded-full" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[70%] bg-gold/5 blur-[160px] rounded-full" />
+                <div className="absolute top-[30%] right-[10%] w-[30%] h-[40%] bg-blue/5 blur-[120px] rounded-full opacity-50" />
+            </div>
+        );
+    };
+
     return (
         <div className="relative w-full h-[100dvh] flex flex-col overflow-hidden text-white safe-area-inset">
             {/* Global Background Elements */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal/10 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue/10 blur-[120px] rounded-full" />
-            </div>
+            {renderBackground()}
 
             {/* Header */}
             <header className="relative z-10 flex items-center justify-between px-6 py-4">
@@ -23,7 +60,7 @@ const GameLayout = ({ children, headerRight, footer, showTitle = true }) => {
             </header>
 
             {/* Main Content */}
-            <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-2">
+            <main className={`relative z-10 flex-1 flex flex-col items-center px-4 py-2 ${mainClassName || 'justify-center'}`}>
                 {children}
             </main>
 

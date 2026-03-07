@@ -3,33 +3,38 @@
 @tailwind utilities;
 
 :root {
-    /* Life Elements - Softer Natural Tones */
-    --growth: #15803d;
-    --safety: #1d4ed8;
-    --risk: #b91c1c;
-    --asset: #6d28d9;
-    --resp: #b45309;
-    --gold: #f4d35e;
+    /* Life Elements - Softer Professional Tones */
+    --growth: #22c55e;
+    --safety: #3b82f6;
+    --risk: #ef4444;
+    --asset: #a855f7;
+    --resp: #f59e0b;
+    --gold: #fbbf24;
+    --teal: #2dd4bf;
 
     /* UI Neutrals */
     --white: #ffffff;
-    --glass-border: rgba(255, 255, 255, 0.9);
-    --glass-highlight: rgba(255, 255, 255, 0.4);
+    --black: #0a0a0b;
+    --deep-gray: #161618;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
 }
 
 @layer components {
     .glass-tube {
         @apply relative z-10;
-        border: 4px solid #f2f2f2;
+        border: 4px solid rgba(255, 255, 255, 0.2);
         border-radius: 0 0 45px 45px;
         /* straight top, round bottom */
-        background: transparent;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(8px);
         overflow: hidden;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
     }
 
     .tube-lip {
-        @apply absolute -top-1 left-1/2 -translate-x-1/2 w-[112%] h-2 border-[3px] border-[var(--glass-border)] rounded-full backdrop-blur-[4px] z-20;
-        background: var(--white);
+        @apply absolute -top-1 left-1/2 -translate-x-1/2 w-[112%] h-2 border-[1px] border-[var(--glass-border)] rounded-full backdrop-blur-[4px] z-20;
+        background: rgba(255, 255, 255, 0.15);
     }
 
     .splash-ripple {
@@ -61,7 +66,7 @@
         top: 18px;
         width: 10px;
         height: calc(100% - 28px);
-        background: rgba(255, 255, 255, 0.2);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
         border-radius: 8px;
         pointer-events: none;
         z-index: 20;
@@ -69,20 +74,20 @@
 
     .liquid-gloss {
         background: linear-gradient(to bottom,
-                rgba(255, 255, 255, 0.45) 0%,
-                rgba(255, 255, 255, 0.15) 15%,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0.1) 15%,
                 transparent 60%);
     }
 }
 
 body {
     margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: linear-gradient(to right, #1d4ed8 0%, #2563eb 100%);
+    background: var(--black);
     color: #ffffff;
     min-height: 100vh;
     overflow-x: hidden;
@@ -93,7 +98,8 @@ h2,
 h3,
 h4,
 .font-heading {
-    font-family: 'Playfair Display', serif;
+    font-family: inherit;
+    font-weight: 900;
 }
 
 /* Custom Tube Styles */
