@@ -125,13 +125,13 @@ const IntroScreen = ({ onStart }) => {
 
     return (
         <motion.div
-            className="absolute inset-0 w-full h-full flex flex-col items-center justify-between z-[100] overflow-hidden"
+            className="absolute inset-0 w-full h-full flex flex-col items-center justify-end z-[100] overflow-hidden pb-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             style={{
                 backgroundImage: `url(${bgImage})`,
-                backgroundSize: 'cover',
+                backgroundSize: '100% 100%',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
             }}
