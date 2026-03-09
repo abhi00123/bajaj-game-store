@@ -157,30 +157,40 @@ const GameScreen: React.FC<GameScreenProps> = ({
                         zIndex: 10,
                         pointerEvents: 'none',
                     }}>
-                        {/* Glow ring */}
+                        {/* 2D Player Character */}
+                        {/* 2D Player Character */}
+                        <div style={{
+                            position: 'relative',
+                            width: 60,  /* Substantially increased size */
+                            height: 90, /* Substantially increased size */
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            marginBottom: -12 /* Better grounding for the larger character */
+                        }}>
+                            <img
+                                src="./assets/player.png"
+                                alt="Player"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'contain',
+                                    display: 'block',
+                                    /* Aggressive blending/filter to remove white background exactly */
+                                    mixBlendMode: 'multiply',
+                                    filter: 'contrast(1.2) brightness(1.05)'
+                                }}
+                            />
+                        </div>
+                        {/* Ground shadow - widened for larger character */}
                         <div style={{
                             width: 28,
-                            height: 28,
+                            height: 4,
+                            background: 'rgba(0,0,0,0.3)',
                             borderRadius: '50%',
-                            background: 'radial-gradient(circle, #FF8533 0%, #CC4400 80%)',
-                            boxShadow: '0 0 12px 4px rgba(255,102,0,0.85), 0 2px 6px rgba(0,0,0,0.5)',
-                            border: '2.5px solid rgba(255,255,255,0.8)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            animation: 'tokenPulse 1.8s ease-in-out infinite',
-                        }}>
-                            {/* Option to still show shield icon on token if protected, but keeping it simple based on feedback: "keep the player as orange throughtout the game" */}
-                            {hasShield && <Shield size={12} color="#fff" />}
-                        </div>
-                        {/* Ground shadow */}
-                        <div style={{
-                            width: 14,
-                            height: 3,
-                            background: 'rgba(0,0,0,0.45)',
-                            borderRadius: '50%',
-                            margin: '2px auto 0',
-                            filter: 'blur(2px)',
+                            margin: '-2px auto 0',
+                            filter: 'blur(2.5px)',
                         }} />
                     </div>
                 </div>
