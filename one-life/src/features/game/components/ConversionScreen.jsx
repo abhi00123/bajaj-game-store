@@ -82,10 +82,10 @@ const ConversionScreen = ({ score, leadData, onBookSlot, onRestart }) => {
 
                     <div className="mt-4 flex flex-col items-center text-center space-y-1.5 px-2">
                         <p className="text-[#FFEBB7] text-xs sm:text-sm font-black italic uppercase tracking-tight">
-                            But you lost an unexcepted event
+                            But you lost to an unexcepted event
                         </p>
                         <p className="text-white text-sm sm:text-[15px] font-black leading-tight max-w-[320px] italic">
-                            "the best time to protect the family was yesterday. the second best time is now"
+                            "The best time to protect the family was yesterday.The second best Time is NOW!"
                         </p>
                     </div>
 
