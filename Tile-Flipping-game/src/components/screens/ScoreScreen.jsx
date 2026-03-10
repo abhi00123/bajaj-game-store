@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useGameEngine } from '../../hooks/useGameEngine';
 import { getFlipStars, getScoreMessage, formatTime, getScoreScenario } from '../../utils/gameUtils';
+import { buildShareUrl } from '../../utils/crypto';
 import { TOTAL_PAIRS, SCREENS } from '../../constants/game';
 import { ACTION } from '../../context/GameContext';
 import { submitToLMS } from '../../utils/api';
@@ -71,15 +72,13 @@ export default function ScoreScreen({ showToast }) {
     }
 
     const handleShare = async () => {
-        // compute app base URL dynamically so share link works under any deployment subpath
-        const appBaseUrl = (typeof window !== 'undefined')
-            ? new URL(import.meta.env.BASE_URL || './', window.location.href).href
-            : '/';
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
 
         const shareData = {
             title: 'Insurance Match',
-            text: 'Check your Insurance match! Take the Insurance match memory game and discover how prepared you are for your insurance.',
-            url: appBaseUrl
+            text: `Hi,\nMy memory score is ${scoreVal}. Find out yours ${shareUrl}\n\n${senderName}`.trim(),
+            url: shareUrl
         };
 
         if (navigator.share) {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, PhoneCall, Calendar, Trophy, RotateCcw, Star, Medal, AlertCircle, Phone, Clock, ChevronDown, ShieldCheck, X } from 'lucide-react';
 import ScoreCard from './ScoreCard';
@@ -42,8 +43,9 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
     ];
 
     const handleShare = async () => {
-        const shareMessage = `I achieved ${score} milestones on Snake Life! 🏆 Secure your future here:`;
-        const shareUrl = window.location.href;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareMessage = `Hi,\nI built ${score} life milestones in this challenge.\nIt really makes you think about how much protection those milestones need — try it here: ${shareUrl}\n\nRegards,\n${senderName}`.trim();
 
         if (navigator.share) {
             try {
@@ -57,8 +59,7 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
             }
         } else {
             try {
-                const fullText = `${shareMessage} ${shareUrl}`;
-                await navigator.clipboard.writeText(fullText);
+                await navigator.clipboard.writeText(shareMessage);
                 alert('Score and link copied to clipboard!');
             } catch (err) {
                 console.error('Failed to copy text: ', err);

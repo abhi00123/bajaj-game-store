@@ -1,7 +1,8 @@
 /**
  * ResultScreen — Exact Replica + Scrolling Fix.
  */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Share2, RefreshCw, Calendar, X, ChevronDown } from 'lucide-react';
 import { submitToLMS } from '../services/apiClient.js';
@@ -102,11 +103,12 @@ const ResultScreen = ({
     };
 
     const handleShare = async () => {
-        const text = `Check how prepared you are for your financial goals with Secure Saga! Play now at Bajaj Life Insurance.`;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const text = `Hi,\nI managed to fulfil ${displayScore}% of my bucket list. Fulfil your bucket list. Click here ${shareUrl}`.trim();
         if (navigator.share) {
-            try { await navigator.share({ title: 'Secure Saga', text, url: window.location.href }); } catch { }
+            try { await navigator.share({ title: 'Secure Saga', text, url: shareUrl }); } catch { }
         } else {
-            try { await navigator.clipboard.writeText(text + ' ' + window.location.href); } catch { }
+            try { await navigator.clipboard.writeText(text); } catch { }
         }
     };
 

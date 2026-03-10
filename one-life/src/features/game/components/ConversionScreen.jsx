@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Phone, Calendar, X, RefreshCw } from 'lucide-react';
 import Modal from './Modal';
@@ -32,12 +33,13 @@ const ConversionScreen = ({ score, leadData, onBookSlot, onRestart }) => {
     ];
 
     const handleShare = async () => {
-        const shareMessage = `I scored ${score} on ONE LIFE! Life is unpredictable — see how prepared you are. Play now!`;
-        const shareUrl = window.location.href;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareMessage = `Hi,\nI just experienced this eye-opening truth about life's uncertainties and protection.\nIt takes less than a minute — give it a try: ${shareUrl}\n\nRegards,\n${senderName}`.trim();
         if (navigator.share) {
-            try { await navigator.share({ title: 'One Life', text: shareMessage, url: shareUrl }); } catch { }
+            try { await navigator.share({ title: 'Expect the Unexpected', text: shareMessage, url: shareUrl }); } catch { }
         } else {
-            try { await navigator.clipboard.writeText(`${shareMessage} ${shareUrl}`); } catch { }
+            try { await navigator.clipboard.writeText(shareMessage); } catch { }
         }
     };
 

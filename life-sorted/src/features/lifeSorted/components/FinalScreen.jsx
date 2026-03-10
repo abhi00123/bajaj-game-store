@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Phone, Calendar, Clock, ChevronDown, ShieldCheck, X, RefreshCw, Trophy, Star, Target } from 'lucide-react';
 import Modal from './Modal';
@@ -42,13 +43,15 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
     ];
 
     const handleShare = async () => {
-        const text = `I just achieved a Life Clarity Score of ${results.score}! I'm a ${results.archetype} in Life Sorted 3D. See your clarity score here!`;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const text = `Hi,\nI just tried this life finance sorting challenge — it really shows why savings, goals and risks shouldn't be mixed together.\nGive it a try: ${shareUrl}\n\n${senderName}`.trim();
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: 'Life Sorted 3D',
                     text,
-                    url: window.location.href,
+                    url: shareUrl,
                 });
             } catch (err) {
                 copyToClipboard(text);

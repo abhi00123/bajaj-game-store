@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { buildShareUrl } from '../utils/crypto';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, X, Calendar, Star, Phone, Check } from 'lucide-react';
@@ -358,15 +359,14 @@ const ResultPage = memo(function ResultPage() {
 
     /* Share handler — Web Share API with clipboard fallback + in-app toast */
     const handleShare = async () => {
-        const text = isZeroScore
-            ? `I played Retirement Sudoku by Bajaj Life. Try it yourself: ${window.location.origin}`
-            : `🎉 I just played Retirement Sudoku by Bajaj Life and scored ${scenario.points} pts! Try it yourself: ${window.location.origin}`;
+        const shareUrl = buildShareUrl() || window.location.origin;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const text = `Hi,\nI managed to balance my retirement pillars and scored ${scenario.points !== undefined ? scenario.points : score} in this Sudoku-style retirement challenge.\nCan you beat my score? — try it here: ${shareUrl}\n\n${senderName}`.trim();
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'Retirement Sudoku Score', text, url: window.location.origin });
+                await navigator.share({ title: 'Retirement Sudoku Score', text, url: shareUrl });
             } catch (err) {
                 if (err.name !== 'AbortError') {
-                    // Share failed, fallback to clipboard
                     try {
                         await navigator.clipboard.writeText(text);
                         setToast({ message: 'Result copied to clipboard!', type: 'success' });

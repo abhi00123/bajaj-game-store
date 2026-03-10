@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildShareUrl } from '../../utils/crypto';
 import { Trophy, Shield, AlertTriangle, Share2, X } from 'lucide-react';
 import LeadModal from '../modals/LeadModal';
 interface EndScreenProps {
@@ -32,18 +33,17 @@ const EndScreen: React.FC<EndScreenProps> = ({ hasShield, playerName, playerMobi
     const [isStatsOpen, setIsStatsOpen] = useState(false);
 
     const handleShare = async () => {
-        const appBaseUrl = (typeof window !== 'undefined')
+        const shareUrl = buildShareUrl() || ((typeof window !== 'undefined')
             ? new URL((import.meta as any).env.BASE_URL || './', window.location.href).href
-            : '/';
+            : '/');
 
-        const shareText = totalShieldsUsed > 0
-            ? `${playerName || 'I'} used ${totalShieldsUsed} shield${totalShieldsUsed > 1 ? 's' : ''}, try for yourself to know how many shields would you use?`
-            : `Check out Life Snakes & Ladders! Play the game and discover how prepared you are for your family\'s future.`;
+        const senderName = typeof window !== 'undefined' ? sessionStorage.getItem('gamification_emp_name') || '' : '';
+        const shareText = `Hi,\nI used ${totalShieldsUsed} shields to avoid snakes in this life Snakes & Ladders challenge.\nIt really shows how protection helps in life's ups and downs — try it here: ${shareUrl}\n\n${senderName}`.trim();
 
         const shareData = {
-            title: 'Life Snakes & Ladders',
+            title: 'Life Snakes and Ladders',
             text: shareText,
-            url: appBaseUrl
+            url: shareUrl
         };
 
         if (navigator.share) {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Share2, Phone, CalendarClock } from 'lucide-react';
 import Button from '../../../components/ui/Button';
+import { buildShareUrl } from '../../../utils/crypto';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -26,11 +27,13 @@ const ConversionScreen = memo(function ConversionScreen({
     onBookSlot,
 }) {
     const handleShare = async () => {
-        const shareText = `I scored ${score}/100 (${category?.label}) on the Life Milestone Race! Check your Life Goals readiness and discover how prepared you are for your future. ${window.location.href}`;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareText = `Hi,\nI just tried this quick life risk preparedness check that shows whether you are prepared or exposed in different situations.\nYou should try it too: ${shareUrl}\n\n${senderName}`.trim();
         const shareData = {
-            title: 'My Life Protection Score',
+            title: 'Life Milestone Race',
             text: shareText,
-            url: window.location.href
+            url: shareUrl
         };
 
         if (navigator.share) {

@@ -9,6 +9,7 @@ import {
 import ScoreRing from '../components/ScoreRing.jsx';
 import InsuranceCards from '../components/InsuranceCards.jsx';
 import { submitToLMS, updateLeadNew } from '../../../utils/api.js';
+import { buildShareUrl } from '../../../utils/crypto';
 
 function getZone(pct) {
     return ZONES.find((z) => pct < z.maxPct) || ZONES[ZONES.length - 1];
@@ -129,13 +130,15 @@ export default function GameOverPage() {
 
     // -- Original Logic --
     const handleShare = async () => {
-        const msg = buildShareMessage(score);
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const msg = `Hi,\nI just crossed ${score} financial hurdles in this challenge.\nSee how many you can cross — try it here: ${shareUrl}\n\n${senderName}`.trim();
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'Life Flight', text: msg });
+                await navigator.share({ title: 'Life Flight', text: msg, url: shareUrl || undefined });
             } catch { /* user cancelled */ }
         } else {
-            try { await navigator.clipboard.writeText(msg); setShared(true); } catch { /* ignore */ }
+            try { await navigator.clipboard.writeText(shareUrl ? `${msg} ${shareUrl}` : msg); setShared(true); } catch { /* ignore */ }
         }
     };
 

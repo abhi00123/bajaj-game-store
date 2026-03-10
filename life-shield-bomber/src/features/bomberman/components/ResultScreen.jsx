@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Calendar, Share2, RotateCcw, X, ChevronDown, Shield, Heart, Clock, Zap, CheckSquare } from 'lucide-react';
 import Confetti from './Confetti.jsx';
+import { buildShareUrl } from '../../../utils/crypto';
 
 const ResultScreen = memo(function ResultScreen({
     finalScore,
@@ -91,12 +92,14 @@ const ResultScreen = memo(function ResultScreen({
     };
 
     const handleShare = async () => {
-        const shareText = `I completed Life Shield Bomber by Bajaj Life Insurance! 🛡️💣`;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareText = `Hi,\nI just realized the importance of riders to protect from life risks. You should try this interesting game. ${shareUrl}\n\n${senderName}`.trim();
         try {
             if (navigator.share) {
-                await navigator.share({ title: 'Life Shield Bomber', text: shareText, url: window.location.href });
+                await navigator.share({ title: 'Shield Man', text: shareText, url: shareUrl });
             } else {
-                await navigator.clipboard.writeText(shareText + ' ' + window.location.href);
+                await navigator.clipboard.writeText(shareText);
             }
         } catch {
             /* fail silently */

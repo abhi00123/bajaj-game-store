@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, PhoneCall, Calendar, Trophy, RotateCcw, Star, Medal, AlertCircle, Phone, Clock, ChevronDown, ShieldCheck, X } from 'lucide-react';
 import ScoreCard from './ScoreCard';
@@ -39,8 +40,9 @@ const ConversionScreen = ({ score, total = 2000, leadData, onRestart, onBookSlot
     ];
 
     const handleShare = async () => {
-        const shareMessage = `I scored ${score} on Financial Tetris! 🏆 Secure your financial future here:`;
-        const shareUrl = window.location.href;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareMessage = `Hi,\nI just played Blocks of Wealth and achieved ${score} milestones.\nSee how many milestones you can reach — try it here: ${shareUrl}\n\n${senderName}`.trim();
 
         if (navigator.share) {
             try {

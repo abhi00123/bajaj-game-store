@@ -6,6 +6,7 @@ import Confetti from './Confetti';
 import { isValidPhone } from '../utils/helpers';
 import Speedometer from './Speedometer';
 import { submitToLMS, updateLeadNew } from '../utils/api';
+import { buildShareUrl } from '../utils/crypto';
 
 const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart }) => {
     const today = new Date().toISOString().split("T")[0];
@@ -114,15 +115,17 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
     };
 
     const handleShare = async () => {
-        // compute app base URL dynamically so share link works under any deployment subpath
-        const appBaseUrl = (typeof window !== 'undefined')
+        // Build share URL with re-encrypted token (referral=Y)
+        const shareUrl = buildShareUrl() || (typeof window !== 'undefined'
             ? new URL(import.meta.env.BASE_URL || './', window.location.href).href
-            : '/';
+            : '/');
+
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
 
         const shareData = {
-            title: 'Bajaj Life Goals Quiz',
-            text: 'Check your Life Goals readiness! Take the Bajaj Life Goals Quiz and discover how prepared you are for your future.',
-            url: appBaseUrl
+            title: 'Life Goals Preparedness',
+            text: `Hi,\nI just tried this Life Goals Preparedness Quiz and scored ${score}/100. It was quite interesting!\nSee how prepared you are for your life goals — try it here: ${shareUrl}\n\n${senderName}`.trim(),
+            url: shareUrl
         };
 
         if (navigator.share) {
@@ -203,7 +206,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                     className="contact-box bg-white p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/50 mb-3 shrink-0"
                 >
                     <p className="text-slate-600 text-[15px] sm:text-sm font-bold text-center mb-4 leading-relaxed">
-                        Want to achieve your LIFE GOALS in Real Life? 
+                        Want to achieve your LIFE GOALS in Real Life?
                     </p>
 
                     {/* Call Action */}

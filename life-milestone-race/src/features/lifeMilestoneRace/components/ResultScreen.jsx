@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, CheckCircle, Share2, RefreshCw, Calendar, X, Check } from 'lucide-react';
 import Confetti from './Confetti';
+import { buildShareUrl } from '../../../utils/crypto';
 import Speedometer from './Speedometer';
 import { submitToLMS, updateLeadNew } from '../../../utils/api';
 
@@ -106,11 +107,12 @@ const ResultScreen = ({
     };
 
     const handleShare = async () => {
-        const appBaseUrl = window.location.href;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
         const shareData = {
-            title: 'Life Milestone Race Score',
-            text: `I scored ${displayScore}/100 in the Life Milestone Race! Check how prepared you are.`,
-            url: appBaseUrl
+            title: 'Life Milestone Race',
+            text: `Hi,\nI just tried this quick life risk preparedness check that shows whether you are prepared or exposed in different situations.\nYou should try it too: ${shareUrl}\n\n${senderName}`.trim(),
+            url: shareUrl
         };
 
         if (navigator.share) {

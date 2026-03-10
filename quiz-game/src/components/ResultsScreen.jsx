@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { buildShareUrl } from '../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, RotateCcw, Phone, Calendar, Clock, X, CheckCircle2, ChevronDown, Share2, ShieldCheck, Medal, Star, AlertCircle } from "lucide-react";
 import ScoreCard from './ScoreCard';
@@ -41,8 +42,9 @@ const ResultsScreen = ({ score, total, onRestart }) => {
     ];
 
     const handleShare = async () => {
-        const shareMessage = `I scored ${score}/${total} on the GST quiz! 🏆 Check your GST knowledge here:`;
-        const shareUrl = window.location.href;
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
+        const shareMessage = `Hi,\nI tried this GST quiz related to Life Insurance and got ${score}/${total}.\nThink you can beat my score? Take the quiz here: ${shareUrl}\n\n${senderName}`.trim();
 
         if (navigator.share) {
             try {
@@ -55,10 +57,8 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                 console.log('Error sharing:', error);
             }
         } else {
-            // Fallback: Copy to clipboard
             try {
-                const fullText = `${shareMessage} ${shareUrl}`;
-                await navigator.clipboard.writeText(fullText);
+                await navigator.clipboard.writeText(shareMessage);
                 alert('Score and link copied to clipboard!');
             } catch (err) {
                 console.error('Failed to copy text: ', err);

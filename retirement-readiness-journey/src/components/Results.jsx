@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildShareUrl } from '../utils/crypto';
 import { motion, AnimatePresence, animate } from 'framer-motion';
 import { Button } from './ui/Button';
 import { Share2, Phone, Calendar, RotateCcw, CheckCircle2 } from 'lucide-react';
@@ -25,10 +26,12 @@ const Results = ({ score, onReset, userInfo }) => {
     };
 
     const handleShare = async () => {
+        const shareUrl = buildShareUrl() || window.location.href;
+        const senderName = sessionStorage.getItem('gamification_emp_name') || '';
         const shareData = {
-            title: 'My Retirement Readiness Score',
-            text: `I scored ${score}/100 on the Retirement Readiness Journey! Can you beat my score?`,
-            url: window.location.href
+            title: 'Retirement Readiness',
+            text: `Hi,\nI just tried this retirement preparedness test and scored ${score}/100. It really made me think about my retirement corpus!\nSee how prepared you are — try it here: ${shareUrl}\n\n${senderName}`.trim(),
+            url: shareUrl
         };
 
         try {
