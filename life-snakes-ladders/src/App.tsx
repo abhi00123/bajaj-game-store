@@ -17,6 +17,8 @@ import EndScreen from './components/screens/EndScreen';
 import LeadCaptureScreen from './components/screens/LeadCaptureScreen';
 import ThankYouScreen from './components/screens/ThankYouScreen';
 
+import { submitToLMS, updateLeadNew } from './utils/api';
+
 interface AppProps {
     campaignId?: string;
     leadEndpoint?: string;
@@ -244,23 +246,49 @@ const App: React.FC<AppProps> = ({
         });
     };
 
-    const handleLeadSubmit = (data: any) => {
+    const handleLeadSubmit = async (data: any) => {
         const payload = {
             ...data,
             hadShieldInGame: gameState.hadShieldAtEnd,
             finalPosition: gameState.playerPosition
         };
+
+        try {
+            const res = await submitToLMS(payload);
+            if (res && res.leadNo) {
+                // If the API returns a leadNo, save it for later use
+                sessionStorage.setItem('snakesLeadNo', res.leadNo);
+            } else if (res && res.success) {
+                // Fallback if success but no specific leadNo property, try mobile mapping
+                sessionStorage.setItem('snakesLeadNo', data.mobile);
+            }
+        } catch (error) {
+            console.error("Error submitting lead to LMS:", error);
+        }
+
         if (onLeadSubmitted) onLeadSubmitted(payload);
         setGameState(prev => ({ ...prev, currentScreen: 'thank-you' }));
     };
 
-    const handleBookingSubmit = (data: any) => {
+    const handleBookingSubmit = async (data: any) => {
         const payload = {
             ...data,
             hadShieldInGame: gameState.hadShieldAtEnd,
             finalPosition: gameState.playerPosition,
             isBookingRequest: true
         };
+
+        try {
+            const leadNo = sessionStorage.getItem('snakesLeadNo');
+            if (leadNo) {
+                await updateLeadNew(leadNo, payload);
+            } else {
+                await submitToLMS(payload);
+            }
+        } catch (error) {
+            console.error("Error updating lead with booking:", error);
+        }
+
         if (onLeadSubmitted) onLeadSubmitted(payload);
         setGameState(prev => ({ ...prev, currentScreen: 'thank-you' }));
     };
@@ -313,8 +341,21 @@ const App: React.FC<AppProps> = ({
         case 'welcome':
             return (
                 <WelcomeScreen
-                    onStart={(data) => {
-                        if (onLeadSubmitted) onLeadSubmitted({ ...data, stage: 'pre-game' });
+                    onStart={async (data) => {
+                        const payload = { ...data, stage: 'pre-game' };
+
+                        try {
+                            const res = await submitToLMS(payload);
+                            if (res && res.leadNo) {
+                                sessionStorage.setItem('snakesLeadNo', res.leadNo);
+                            } else if (res && res.success) {
+                                sessionStorage.setItem('snakesLeadNo', data.mobile);
+                            }
+                        } catch (error) {
+                            console.error("Error submitting start lead to LMS:", error);
+                        }
+
+                        if (onLeadSubmitted) onLeadSubmitted(payload);
 
                         // If the mode choice was made in the popup itself
                         if (data.isProtected !== undefined) {
