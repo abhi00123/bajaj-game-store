@@ -96,7 +96,7 @@ const GameTile = memo(function GameTile({
 
     return (
         <motion.div
-            layout
+            layout="position"
             layoutId={tile.id}
             onPanEnd={handlePanEnd}
             onClick={handleClick}

@@ -39,7 +39,7 @@ const ResultScreen = ({
         } else {
             return {
                 headline: "You’re On The Right Path",
-                message: "“Great progress! You’re well on track to securing your life goals.”",
+                message: "“Great progress! You’re well on track to securing your life goals”",
                 cta: "Turn Your Life Goals into Reality with Us!"
             };
         }
@@ -145,8 +145,8 @@ const ResultScreen = ({
                 </div>
 
                 {/* BLOCK 2: Feedback & Headline (Middle) */}
-                <div className="flex flex-col items-center gap-1 sm:gap-4 px-2 -mt-10 xs:-mt-4 sm:mt-0">
-                    <p className="text-white font-black italic text-[14px] sm:text-[18px] leading-tight px-4 drop-shadow-lg text-center max-w-[360px]">
+                <div className="flex flex-col items-center gap-1 sm:gap-4 px-2 -mt-2 xs:mt-0 sm:mt-4">
+                    <p className="text-white font-black italic text-[16px] sm:text-[22px] leading-tight px-4 drop-shadow-lg text-center max-w-[360px]">
                         "{resultContent.headline}"
                     </p>
 
@@ -159,7 +159,7 @@ const ResultScreen = ({
                         </button>
                     </div>
 
-                    <p className="text-blue-100/90 text-[10px] sm:text-[13px] font-medium italic leading-relaxed max-w-[340px] px-6 opacity-80 text-center">
+                    <p className="text-blue-100/90 text-[12px] sm:text-[16px] font-medium italic leading-relaxed max-w-[340px] px-6 opacity-80 text-center">
                         {resultContent.message}
                     </p>
                 </div>

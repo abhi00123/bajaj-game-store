@@ -10,15 +10,13 @@ import secureThumbnail from '../../assets/image/secure-thumbnail.png';
 const LandingPage = memo(function LandingPage({ onStart }) {
     return (
         <div className="fixed inset-0 w-full h-full flex flex-col items-center justify-center bg-[#060E24] overflow-hidden">
-            {/* Background Thumbnail with aspect-ratio handling */}
-            <div
-                className="absolute inset-0 w-full h-full z-10"
-                style={{
-                    backgroundImage: `url(${secureThumbnail})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                }}
+            {/* Background Thumbnail optimized with lazy loading */}
+            <img
+                src={secureThumbnail}
+                alt="Secure Saga Thumbnail"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover z-10"
             />
 
             {/* Subtle overlay for better depth */}

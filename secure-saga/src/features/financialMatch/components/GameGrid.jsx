@@ -32,7 +32,7 @@ const GameGrid = memo(function GameGrid({
 
     const tiles = useMemo(() => {
         if (!grid) return null;
-        return grid.map((row, rowIndex) =>
+        return grid.flatMap((row, rowIndex) =>
             row.map((tile, colIndex) => {
                 const key = tile ? tile.id : `empty-${rowIndex}-${colIndex}`;
 
