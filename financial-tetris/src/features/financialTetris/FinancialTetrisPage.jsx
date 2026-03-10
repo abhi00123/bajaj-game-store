@@ -179,7 +179,7 @@ const FinancialTetrisPage = () => {
                         onTouchMove={handleTouchMove}
                         onTouchEnd={handleTouchEnd}
                     >
-                        <div className="px-3">
+                        <div className="px-3 mt-16">
                             <ScoreDisplay
                                 score={linesCleared}
                                 timeLeft={timeLeft}

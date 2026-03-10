@@ -132,104 +132,108 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
 
     return (
         <motion.div
-            className="w-full h-full flex flex-col items-center bg-blue-950 p-4 sh:p-2 mh:p-3 pb-4 sh:pb-6 mh:pb-3 relative overflow-hidden"
+            className="w-full h-full relative overflow-hidden bg-blue-950"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
         >
-            {/* Bluish-white Frosty Overlay */}
+            {/* Absolute Backgrounds - Sticky to the static motion.div */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-white/10 z-0 pointer-events-none" />
             <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] z-0 pointer-events-none" />
-
-            {/* Background Image */}
             <div
-                className="absolute inset-0 bg-[length:100%_100%] bg-center bg-no-repeat opacity-40 blur-md scale-110 pointer-events-none"
+                className="absolute inset-0 bg-[length:100%_100%] bg-center bg-no-repeat opacity-40 blur-md scale-110 z-0 pointer-events-none"
                 style={{ backgroundImage: `url("${bgImage}")` }}
             />
 
-            {/* Header / Top Bar */}
-            <div className="w-full max-w-sm flex items-center justify-center relative py-2 sh:py-0 mb-1 sh:mb-0 z-10">
-                <p className="text-gray-200 font-bold text-2xl sm:text-3xl sh:text-lg text-center drop-shadow-md">
-                    Hi <span className="text-blue-400 font-black">{leadData?.name || 'Friend'}!</span><br />
-                    <span>You Built a Life of</span>
-                </p>
-                <button
-                    onClick={handleShare}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 sh:p-1.5 bg-blue-600 rounded-full text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all active:scale-95 z-20"
-                >
-                    <Share2 className="w-5 h-5 sh:w-3.5 sh:h-3.5" />
-                </button>
-            </div>
+            {/* Scrollable Overlay Layer */}
+            <div className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden p-4 sh:p-2 mh:p-3 pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-10 flex flex-col items-center">
 
-            <div className="w-full max-w-sm flex flex-col items-center flex-1 justify-between gap-y-3 sh:gap-y-0.5 min-h-0 z-10">
-                {/* Score Section */}
-                <div className="scale-90 sh:scale-[0.85] mh:scale-[0.88] transform origin-center py-1 sh:py-0 sh:-mt-4 sh:-mb-12 mh:-mt-2 mh:-mb-8 transition-all">
-                    <ScoreCard score={score} total={total} />
-                </div>
-
-                {/* Messaging Section */}
-                <div className="space-y-1 sh:space-y-0.5 text-center flex flex-col items-center">
-                    <h2 className="text-xl sm:text-2xl sh:text-lg font-black text-white tracking-tight leading-tight px-4 drop-shadow-lg">
-                        Calculate what Life Cover your Family needs to continue this life
-                    </h2>
-                </div>
-
-                {/* Primary Action */}
-                <button
-                    onClick={handleShare}
-                    className="flex items-center justify-center gap-2 bg-[#1d4ed8] text-white font-black py-4 sh:py-3.5 mh:py-3 px-8 rounded-2xl sh:rounded-xl mh:rounded-xl shadow-[0_4px_20px_rgba(29,78,216,0.6)] hover:bg-blue-600 transition-all text-lg sh:text-base w-full max-w-[280px] active:scale-[0.98]"
-                >
-                    <Share2 className="w-5 h-5 sh:w-4 sh:h-4" />
-                    <span>Share</span>
-                </button>
-
-                {/* Action Card Section */}
-                <div className="w-full bg-[#0f172a]/80 backdrop-blur-md rounded-[28px] sh:rounded-[20px] mh:rounded-[24px] p-5 sh:p-3 mh:p-4 border border-slate-800 space-y-4 sh:space-y-2 mh:space-y-3 relative overflow-hidden text-center shadow-xl">
-                    <p className="text-white text-lg sh:text-base font-bold leading-tight px-2">
-                        A simple conversation can protect everything you're building
+                {/* Header / Top Bar */}
+                <div className="w-full max-w-sm flex shrink-0 items-center justify-center relative py-2 sh:py-0 mb-3 sh:mb-0 z-10">
+                    <p className="text-gray-200 font-bold text-2xl sm:text-3xl sh:text-lg text-center drop-shadow-md">
+                        Hi <span className="text-blue-400 font-black">{leadData?.name || 'Friend'}!</span><br />
+                        <span>You Built a Life of</span>
                     </p>
+                    <button
+                        onClick={handleShare}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 sh:p-1.5 bg-blue-600 rounded-full text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all active:scale-95 z-20"
+                    >
+                        <Share2 className="w-5 h-5 sh:w-3.5 sh:h-3.5" />
+                    </button>
+                </div>
 
-                    <div className="flex flex-col gap-2.5 sh:gap-1.5 mh:gap-2">
-                        <motion.a
-                            href="tel:18002097272"
-                            className="bg-amber-500 text-black font-black py-3 sh:py-2.5 mh:py-2.5 px-6 rounded-2xl sh:rounded-xl mh:rounded-xl flex items-center justify-center gap-3 transition-all text-lg sh:text-base border border-amber-400 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                        >
-                            <Phone className="w-5 h-5 sh:w-4 sh:h-4 text-black" />
-                            <span>Call now</span>
-                        </motion.a>
+                <div className="w-full max-w-sm flex flex-col items-center flex-1 justify-center min-h-full gap-y-4 sh:gap-y-2 z-10">
+                    {/* Score Section */}
+                    <div className="scale-90 sh:scale-[0.85] mh:scale-[0.88] shrink-0 transform origin-center py-1 sh:py-0 transition-all">
 
-                        <div className="flex items-center gap-4 py-0.5 sh:py-0">
-                            <div className="h-[1px] flex-1 bg-slate-800" />
-                            <span className="text-slate-600 font-bold text-[10px] uppercase tracking-widest leading-none">OR</span>
-                            <div className="h-[1px] flex-1 bg-slate-800" />
+                        <ScoreCard score={score} total={total} />
+                    </div>
+
+                    {/* Messaging Section */}
+                    <div className="space-y-1 sh:space-y-0.5 text-center flex flex-col items-center">
+                        <h2 className="text-xl sm:text-2xl sh:text-lg font-black text-white tracking-tight leading-tight px-4 drop-shadow-lg">
+                            Calculate what Life Cover your Family needs to continue this life
+                        </h2>
+                    </div>
+
+                    {/* Primary Action */}
+                    <button
+                        onClick={handleShare}
+                        className="flex items-center justify-center gap-2 bg-[#1d4ed8] text-white font-black py-4 sh:py-3.5 mh:py-3 px-8 rounded-2xl sh:rounded-xl mh:rounded-xl shadow-[0_4px_20px_rgba(29,78,216,0.6)] hover:bg-blue-600 transition-all text-lg sh:text-base w-full max-w-[280px] active:scale-[0.98]"
+                    >
+                        <Share2 className="w-5 h-5 sh:w-4 sh:h-4" />
+                        <span>Share</span>
+                    </button>
+
+                    {/* Action Card Section */}
+                    <div className="w-full shrink-0 bg-[#0f172a]/80 backdrop-blur-md rounded-[28px] sh:rounded-[20px] mh:rounded-[24px] p-5 sh:p-3 mh:p-4 border border-slate-800 space-y-4 sh:space-y-2 mh:space-y-3 relative overflow-hidden text-center shadow-xl">
+                        <p className="text-white text-lg sh:text-base font-bold leading-tight px-2">
+                            A simple conversation can protect everything you're building
+                        </p>
+
+                        <div className="flex flex-col gap-2.5 sh:gap-1.5 mh:gap-2">
+                            <motion.a
+                                href="tel:18002097272"
+                                className="bg-amber-500 text-black font-black py-3 sh:py-2.5 mh:py-2.5 px-6 rounded-2xl sh:rounded-xl mh:rounded-xl flex items-center justify-center gap-3 transition-all text-lg sh:text-base border border-amber-400 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                            >
+                                <Phone className="w-5 h-5 sh:w-4 sh:h-4 text-black" />
+                                <span>Call now</span>
+                            </motion.a>
+
+                            <div className="flex items-center gap-4 py-0.5 sh:py-0">
+                                <div className="h-[1px] flex-1 bg-slate-800" />
+                                <span className="text-slate-600 font-bold text-[10px] uppercase tracking-widest leading-none">OR</span>
+                                <div className="h-[1px] flex-1 bg-slate-800" />
+                            </div>
+
+                            <motion.button
+                                onClick={() => setIsBookingOpen(true)}
+                                className="bg-green-600 text-white font-black py-3 sh:py-2.5 mh:py-2.5 px-6 rounded-2xl sh:rounded-xl mh:rounded-xl flex items-center justify-center gap-3 transition-all text-lg sh:text-base shadow-[0_0_15px_rgba(22,163,74,0.2)] hover:bg-green-500"
+                            >
+                                <Calendar className="w-5 h-5 sh:w-4 sh:h-4 opacity-80" />
+                                <span>Book a slot</span>
+                            </motion.button>
                         </div>
+                    </div>
 
-                        <motion.button
-                            onClick={() => setIsBookingOpen(true)}
-                            className="bg-green-600 text-white font-black py-3 sh:py-2.5 mh:py-2.5 px-6 rounded-2xl sh:rounded-xl mh:rounded-xl flex items-center justify-center gap-3 transition-all text-lg sh:text-base shadow-[0_0_15px_rgba(22,163,74,0.2)] hover:bg-green-500"
-                        >
-                            <Calendar className="w-5 h-5 sh:w-4 sh:h-4 opacity-80" />
-                            <span>Book a slot</span>
-                        </motion.button>
+                    {/* Restart Action */}
+                    <button
+                        onClick={onRestart}
+                        className="w-full py-4 mt-2 flex items-center justify-center gap-3 text-white/50 hover:text-white transition-colors group shrink-0"
+                    >
+                        <RotateCcw className="w-6 h-6 opacity-60 group-hover:opacity-100" />
+                        <span className="text-xl font-bold tracking-widest capitalize">Play again</span>
+                    </button>
+
+                    {/* Disclaimer */}
+                    <div className="w-full px-6 opacity-40 mt-1 pb-4 shrink-0">
+                        <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto tracking-normal">
+                            <span className="opacity-60 mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                        </p>
                     </div>
                 </div>
-
-                {/* Restart Action */}
-                <button
-                    onClick={onRestart}
-                    className="w-full py-2 flex items-center justify-center gap-2 text-white/40 hover:text-white transition-colors group"
-                >
-                    <RotateCcw className="w-4 h-4 opacity-40 group-hover:opacity-100" />
-                    <span className="text-xs font-bold uppercase tracking-[0.2em]">Play again</span>
-                </button>
-
-                {/* Disclaimer */}
-                <div className="w-full px-6 opacity-40 mt-4">
-                    <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto">
-                        <span className="opacity-60 mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                    </p>
-                </div>
             </div>
+
 
             <AnimatePresence>
                 {isBookingSuccess && (

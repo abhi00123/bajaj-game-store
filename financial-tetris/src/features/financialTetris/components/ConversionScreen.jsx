@@ -137,94 +137,98 @@ const ConversionScreen = ({ score, total = 2000, leadData, onRestart, onBookSlot
 
     return (
         <motion.div
-            className="w-full h-full flex flex-col items-center p-4 pb-4 relative overflow-hidden" style={{ background: '#050c1a' }}
+            className="w-full h-full relative overflow-hidden"
+            style={{ background: '#050c1a' }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
         >
-            {/* Header / Top Bar */}
-            <div className="w-full max-w-sm flex flex-col items-center justify-center relative py-2 mb-1">
-                <p className="text-gray-400 font-bold text-2xl text-center">
-                    Hi <span className="text-blue-500 font-black">{leadData?.name || 'Friend'}</span>
-                </p>
-                <p className="text-white font-black text-2xl text-center mt-1">
-                    You Achieved
-                </p>
-                <button
-                    onClick={handleShare}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-white/5 backdrop-blur-sm rounded-full text-white/70 hover:text-white hover:bg-white/10 border border-white/10 transition-all active:scale-95 z-10"
-                >
-                    <Share2 className="w-5 h-5" />
-                </button>
-            </div>
-
-            <div className="w-full max-w-sm flex flex-col items-center gap-y-3">
-                {/* Score Section */}
-                <div className="scale-90 transform origin-center py-1">
-                    <ScoreCard score={score} total={total} />
+            {/* Scrollable Content Layer */}
+            <div className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden p-4 pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col items-center">
+                {/* Header / Top Bar */}
+                <div className="w-full max-w-sm flex flex-col items-center justify-center relative py-2 mb-1">
+                    <p className="text-gray-400 font-bold text-2xl text-center">
+                        Hi <span className="text-blue-500 font-black">{leadData?.name || 'Friend'}</span>
+                    </p>
+                    <p className="text-white font-black text-2xl text-center mt-1">
+                        You Achieved
+                    </p>
+                    <button
+                        onClick={handleShare}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-white/5 backdrop-blur-sm rounded-full text-white/70 hover:text-white hover:bg-white/10 border border-white/10 transition-all active:scale-95 z-10"
+                    >
+                        <Share2 className="w-5 h-5" />
+                    </button>
                 </div>
 
-                {/* Messaging Section */}
-                <div className="text-center flex flex-col items-center">
-                    <p className="text-xl text-white font-black leading-tight px-4">
-                        {getMotivationalMessage(score)}
-                    </p>
-                </div>
-
-                {/* Primary Action */}
-                <button
-                    onClick={handleShare}
-                    className="flex items-center justify-center gap-2 bg-blue-600 text-white font-black py-4 px-8 rounded-2xl shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:bg-blue-500 transition-all text-lg w-full max-w-[280px]"
-                >
-                    <Share2 className="w-5 h-5" />
-                    <span>Share</span>
-                </button>
-
-                {/* Action Card Section */}
-                <div className="w-full bg-[#0f172a]/80 backdrop-blur-md rounded-[28px] p-5 border border-slate-800 space-y-4 relative overflow-hidden text-center shadow-xl">
-                    <p className="text-white text-md font-bold leading-tight">
-                        To build a strong financial foundation,<br />Connect with our Relationship Manager now!
-                    </p>
-
-                    <div className="flex flex-col gap-3">
-                        <motion.a
-                            href="tel:18002097272"
-                            className="bg-amber-600 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all text-lg border border-amber-500/20 hover:bg-amber-500 active:scale-95"
-                        >
-                            <Phone className="w-6 h-6 text-white/80" />
-                            <span>Call now</span>
-                        </motion.a>
-
-                        <div className="flex items-center gap-4 py-1">
-                            <div className="h-[1px] flex-1 bg-slate-800" />
-                            <span className="text-slate-600 font-bold text-[14px] uppercase tracking-widest leading-none">OR</span>
-                            <div className="h-[1px] flex-1 bg-slate-800" />
-                        </div>
-
-                        <motion.button
-                            onClick={() => setIsBookingOpen(true)}
-                            className="bg-green-600 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all text-lg shadow-[0_0_15px_rgba(22,163,74,0.2)] hover:bg-green-500"
-                        >
-                            <Calendar className="w-5 h-5 opacity-80" />
-                            <span>Book a slot</span>
-                        </motion.button>
+                <div className="w-full max-w-sm flex flex-col items-center gap-y-3">
+                    {/* Score Section */}
+                    <div className="scale-90 transform origin-center py-1">
+                        <ScoreCard score={score} total={total} />
                     </div>
-                </div>
 
-                {/* Restart Action */}
-                <button
-                    onClick={onRestart}
-                    className="w-full py-2 text-gray-400 font-black text-xl flex items-center justify-center gap-3 hover:text-white transition-all uppercase tracking-widest"
-                >
-                    <RotateCcw className="w-6 h-6 text-gray-500" />
-                    <span>Play again</span>
-                </button>
+                    {/* Messaging Section */}
+                    <div className="text-center flex flex-col items-center">
+                        <p className="text-xl text-white font-black leading-tight px-4">
+                            {getMotivationalMessage(score)}
+                        </p>
+                    </div>
 
-                {/* Disclaimer */}
-                <div className="w-full px-4 mb-2 mt-auto">
-                    <p className="text-[9px] sh:text-[8px] text-gray-500/80 leading-tight text-center font-medium">
-                        <span className="font-bold">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                    </p>
+                    {/* Primary Action */}
+                    <button
+                        onClick={handleShare}
+                        className="flex items-center justify-center gap-2 bg-blue-600 text-white font-black py-4 px-8 rounded-2xl shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:bg-blue-500 transition-all text-lg w-full max-w-[280px]"
+                    >
+                        <Share2 className="w-5 h-5" />
+                        <span>Share</span>
+                    </button>
+
+                    {/* Action Card Section */}
+                    <div className="w-full bg-[#0f172a]/80 backdrop-blur-md rounded-[28px] p-5 border border-slate-800 space-y-4 relative overflow-hidden text-center shadow-xl">
+                        <p className="text-white text-md font-bold leading-tight">
+                            To build a strong financial foundation,<br />Connect with our Relationship Manager now!
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <motion.a
+                                href="tel:18002097272"
+                                className="bg-amber-600 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all text-lg border border-amber-500/20 hover:bg-amber-500 active:scale-95"
+                            >
+                                <Phone className="w-6 h-6 text-white/80" />
+                                <span>Call now</span>
+                            </motion.a>
+
+                            <div className="flex items-center gap-4 py-1">
+                                <div className="h-[1px] flex-1 bg-slate-800" />
+                                <span className="text-slate-600 font-bold text-[14px] uppercase tracking-widest leading-none">OR</span>
+                                <div className="h-[1px] flex-1 bg-slate-800" />
+                            </div>
+
+                            <motion.button
+                                onClick={() => setIsBookingOpen(true)}
+                                className="bg-green-600 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all text-lg shadow-[0_0_15px_rgba(22,163,74,0.2)] hover:bg-green-500"
+                            >
+                                <Calendar className="w-5 h-5 opacity-80" />
+                                <span>Book a slot</span>
+                            </motion.button>
+                        </div>
+                    </div>
+
+                    {/* Restart Action */}
+                    <button
+                        onClick={onRestart}
+                        className="w-full py-3 text-gray-400 font-black text-xl flex items-center justify-center gap-3 hover:text-white transition-all tracking-widest"
+                    >
+                        <RotateCcw className="w-6 h-6 text-gray-500" />
+                        <span>Play again</span>
+                    </button>
+
+                    {/* Disclaimer */}
+                    <div className="w-full px-4 mb-2 mt-auto">
+                        <p className="text-[9px] sh:text-[8px] text-gray-500/80 leading-tight text-center font-medium">
+                            <span className="font-bold">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                        </p>
+                    </div>
                 </div>
             </div>
 

@@ -65,7 +65,7 @@ const WelcomeScreen = ({ onStart }) => {
 
     return (
         <motion.div
-            className="w-full h-[100dvh] flex flex-col items-center justify-end pb-12 overflow-hidden bg-no-repeat"
+            className="w-full h-[100dvh] flex flex-col items-center justify-end pb-6 overflow-hidden bg-no-repeat"
             style={{
                 backgroundImage: 'url(./assets/Quiz-bg.png)',
                 backgroundSize: '100% 100%',

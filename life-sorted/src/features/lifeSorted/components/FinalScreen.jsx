@@ -100,7 +100,7 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
 
     return (
         <motion.div
-            className="w-full min-h-[100dvh] flex flex-col items-center p-4 pb-20 relative overflow-hidden"
+            className="w-full flex flex-col items-center pt-8 pb-20 relative min-h-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
@@ -112,7 +112,7 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
                 <Share2 className="w-5 h-5" />
             </button>
 
-            <div className="w-full max-w-sm flex flex-col items-center flex-1 gap-y-6 z-10 pt-8">
+            <div className="w-full max-w-sm flex flex-col items-center flex-1 gap-y-6 z-10 px-4">
                 <div className="text-center">
                     <h2 className="text-4xl font-black text-white tracking-tight uppercase">
                         HII <span className="text-gold">{leadData?.name || 'GUEST'}</span>
@@ -185,13 +185,6 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
                     </div>
                 </div>
 
-                {/* Disclaimer */}
-                <div className="w-full px-6 opacity-40 mt-4">
-                    <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter">
-                        <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                    </p>
-                </div>
-
                 {/* Play Again Action */}
                 <button
                     onClick={onRetry}
@@ -200,6 +193,13 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
                     <RefreshCw className="w-6 h-6 text-gold" />
                     <span>Play again</span>
                 </button>
+
+                {/* Disclaimer */}
+                <div className="w-full px-6 opacity-40 mt-0 mb-4">
+                    <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto tracking-tighter">
+                        <span className="opacity-60 mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                    </p>
+                </div>
             </div>
 
             {/* Booking Modal */}
@@ -280,7 +280,7 @@ const FinalScreen = ({ results, onRetry, leadData, onBookingSuccess }) => {
                     </form>
                 </div>
             </Modal>
-        </motion.div >
+        </motion.div>
     );
 };
 
