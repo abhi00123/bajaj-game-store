@@ -131,7 +131,7 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
 
     return (
         <motion.div
-            className="w-full h-[100dvh] flex flex-col items-center bg-blue-950 p-4 sh:p-2 mh:p-3 pb-4 sh:pb-6 mh:pb-3 relative overflow-hidden"
+            className="w-full h-full flex flex-col items-center bg-blue-950 p-4 sh:p-2 mh:p-3 pb-4 sh:pb-6 mh:pb-3 relative overflow-hidden"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
