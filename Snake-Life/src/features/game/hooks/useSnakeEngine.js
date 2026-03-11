@@ -45,7 +45,9 @@ export const useSnakeEngine = () => {
 
     useEffect(() => {
         const setupAudio = (src, ref) => {
-            const audio = new Audio(`${src}?v=${Date.now()}`);
+            // Only append version query if it's not a data URI
+            const finalSrc = src.startsWith('data:') ? src : `${src}?v=${Date.now()}`;
+            const audio = new Audio(finalSrc);
             audio.preload = 'auto';
             ref.current = audio;
         };

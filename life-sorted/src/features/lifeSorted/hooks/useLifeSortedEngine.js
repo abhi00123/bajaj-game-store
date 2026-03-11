@@ -52,25 +52,15 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
                     const sourceTube = newTubes[selectedTube];
                     const targetTube = newTubes[index];
 
-                    const colorToMove = sourceTube[sourceTube.length - 1].category;
-                    let movedCount = 0;
-
-                    // Move multiple segments if they match the color and there's space
-                    while (
-                        sourceTube.length > 0 &&
-                        targetTube.length < config.capacity &&
-                        sourceTube[sourceTube.length - 1].category === colorToMove
-                    ) {
-                        const segment = sourceTube.pop();
-                        targetTube.push(segment);
-                        movedCount++;
-                    }
+                    // CRITICAL: Move only ONE segment per tap
+                    const segment = sourceTube.pop();
+                    targetTube.push(segment);
 
                     setTubes(newTubes);
                     setSelectedTube(null);
                     setMoves((prev) => prev + 1);
 
-                    // Correct move feedback
+                    // Correct move feedback - 35% chance
                     if (Math.random() < 0.35) {
                         const messages = MESSAGE_LIBRARY.VALID_MOVE;
                         showToast(messages[Math.floor(Math.random() * messages.length)], 'success');
@@ -94,9 +84,11 @@ export const useLifeSortedEngine = (currentLevelIndex, onLevelWin, showToast, tr
                     // Invalid move feedback
                     setMistakes((prev) => prev + 1);
                     if (validation.reason === 'CATEGORY_MISMATCH') {
-                        showToast(MESSAGE_LIBRARY.WRONG_CATEGORY, 'error');
+                        const messages = MESSAGE_LIBRARY.WRONG_CATEGORY;
+                        showToast(messages[Math.floor(Math.random() * messages.length)], 'error');
                     } else if (validation.reason === 'TARGET_FULL') {
-                        showToast(MESSAGE_LIBRARY.TUBE_FULL, 'error');
+                        const messages = MESSAGE_LIBRARY.TUBE_FULL;
+                        showToast(messages[Math.floor(Math.random() * messages.length)], 'error');
                     }
                     setSelectedTube(null);
                     // Shake animation handled by component via selectedTube being nullified

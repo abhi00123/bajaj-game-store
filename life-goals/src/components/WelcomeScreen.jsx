@@ -14,7 +14,7 @@ const TermsModal = () => (
         </Dialog.Trigger>
         <Dialog.Portal>
             <Dialog.Overlay className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200" />
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-[201] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-2xl border-[6px] border-[#0066B2] animate-in zoom-in-95 fade-in duration-300">
+            <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 z-[201] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-2xl border-[6px] border-[#0066B2] animate-in zoom-in-95 fade-in duration-300">
                 <div className="flex justify-between items-center mb-4 border-b-2 border-slate-100 pb-2">
                     <Dialog.Title className="text-[#0066B2] text-xl font-black uppercase tracking-tight">
                         Terms & Conditions

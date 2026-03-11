@@ -7,6 +7,45 @@ import { isValidPhone } from '../utils/helpers';
 import Speedometer from './Speedometer';
 import { submitToLMS, updateLeadNew } from '../utils/api';
 import { buildShareUrl } from '../utils/crypto';
+import * as Dialog from '@radix-ui/react-dialog';
+
+const TermsModal = () => (
+    <Dialog.Root>
+        <Dialog.Trigger asChild>
+            <span className="text-[#0066B2] underline cursor-pointer hover:text-[#004C85]" onClick={(e) => e.stopPropagation()}>Terms & Conditions</span>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200" />
+            <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-1/2 z-[201] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-2xl border-[6px] border-[#0066B2] animate-in zoom-in-95 fade-in duration-300">
+                <div className="flex justify-between items-center mb-4 border-b-2 border-slate-100 pb-2">
+                    <Dialog.Title className="text-[#0066B2] text-xl font-black uppercase tracking-tight">
+                        Terms & Conditions
+                    </Dialog.Title>
+                    <Dialog.Close asChild>
+                        <button className="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                            <X className="w-6 h-6" />
+                        </button>
+                    </Dialog.Close>
+                </div>
+                <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2 text-slate-600 font-bold text-xs min-[375px]:text-sm leading-relaxed scrollbar-thin scrollbar-thumb-slate-200">
+                    <p>
+                        I hereby authorize Bajaj Life Insurance Limited to call me on the contact number made available by me on the website with a specific request to call back. I further declare that, irrespective of my contact number being registered on National Customer Preference Register (NCPR) or on National Do Not Call Registry (NDNC), any call made, SMS or WhatsApp sent in response to my request shall not be construed as an Unsolicited Commercial Communication even though the content of the call may be for the purposes of explaining various insurance products and services or solicitation and procurement of insurance business.
+                    </p>
+                    <p>
+                        Please refer to <a href="https://www.bajajallianzlife.com/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="text-[#0066B2] underline">BALIC Privacy Policy</a>.
+                    </p>
+                </div>
+                <div className="mt-6">
+                    <Dialog.Close asChild>
+                        <button className="btn-primary-3d w-full !py-3 uppercase tracking-widest text-sm">
+                            Close
+                        </button>
+                    </Dialog.Close>
+                </div>
+            </Dialog.Content>
+        </Dialog.Portal>
+    </Dialog.Root>
+);
 
 const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart }) => {
     const today = new Date().toISOString().split("T")[0];
@@ -130,7 +169,12 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: shareData.title,
+                    text: shareData.text
+                });
             } catch (err) {
                 console.log('Error sharing:', err);
             }
@@ -333,7 +377,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                         max={maxDate}
                                         value={formData.date}
                                         onChange={e => updateField('date', e.target.value)}
-                                        className={`block w-full bg-slate-50 h-11 border-2 ${errors.date ? 'border-red-400' : 'border-slate-100'} text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-0 text-sm font-bold pl-11 pr-4`}
+                                        className={`block w-full min-h-[52px] bg-slate-50 h-11 border-2 ${errors.date ? 'border-red-400' : 'border-slate-100'} text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-0 text-sm font-bold pl-11 pr-4`}
                                     />
                                 </div>
                                 <div className="min-h-[18px]">
@@ -345,7 +389,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none z-10" />
                                     <div
                                         onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
-                                        className={`w-full bg-slate-50 h-11 border-2 ${errors.time ? 'border-red-400' : 'border-slate-100'} text-slate-800 text-sm font-bold pl-11 pr-10 rounded-md cursor-pointer flex items-center justify-between ${isTimeDropdownOpen ? 'border-blue-500 ring-4 ring-blue-100' : ''}`}
+                                        className={`w-full min-h-[52px] bg-slate-50 h-11 border-2 ${errors.time ? 'border-red-400' : 'border-slate-100'} text-slate-800 text-sm font-bold pl-11 pr-10 rounded-md cursor-pointer flex items-center justify-between ${isTimeDropdownOpen ? 'border-blue-500 ring-4 ring-blue-100' : ''}`}
                                     >
                                         <span className={formData.time ? 'text-slate-800' : 'text-slate-400'}>
                                             {formData.time || "Choose a slot"}
@@ -431,7 +475,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                     className="mt-0.5 w-4 h-4 accent-[#0066B2] cursor-pointer shrink-0"
                                 />
                                 <span className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">
-                                    I agree to the <span className="text-[#0066B2] underline cursor-pointer">Terms & Conditions</span> and allow Bajaj Life Insurance to contact me even if registered on DND.
+                                    I agree to the <TermsModal /> and allow Bajaj Life Insurance to contact me even if registered on DND.
                                 </span>
                             </label>
 

@@ -100,6 +100,7 @@ const IntroScreen = ({ onStart }) => {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
+                            <label htmlFor="name" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Name</label>
                             <input
                                 type="text"
                                 value={formData.name}
@@ -126,6 +127,7 @@ const IntroScreen = ({ onStart }) => {
                         </div>
 
                         <div className="space-y-2">
+                            <label htmlFor="phone" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Mobile Number</label>
                             <input
                                 type="tel"
                                 value={formData.phone}

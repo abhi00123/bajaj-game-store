@@ -106,7 +106,14 @@ const ResultScreen = ({
         const shareUrl = buildShareUrl() || window.location.href;
         const text = `Hi,\nI managed to fulfil ${Math.round(displayScore)}% of my bucket list. Fulfil your bucket list. Click here ${shareUrl}`.trim();
         if (navigator.share) {
-            try { await navigator.share({ title: 'Secure Saga', text, url: shareUrl }); } catch { }
+            try {
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: 'Secure Saga',
+                    text: text
+                });
+            } catch { }
         } else {
             try { await navigator.clipboard.writeText(text); } catch { }
         }

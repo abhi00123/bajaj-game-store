@@ -135,7 +135,12 @@ export default function GameOverPage() {
         const msg = `Hi,\nI just crossed ${Math.round(score)} financial hurdles in this challenge.\nSee how many you can cross — try it here: ${shareUrl}\n\n${senderName}`.trim();
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'Life Flight', text: msg, url: shareUrl || undefined });
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: 'Life Flight',
+                    text: msg
+                });
             } catch { /* user cancelled */ }
         } else {
             try { await navigator.clipboard.writeText(shareUrl ? `${msg} ${shareUrl}` : msg); setShared(true); } catch { /* ignore */ }

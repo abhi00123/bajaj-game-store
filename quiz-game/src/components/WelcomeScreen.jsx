@@ -65,7 +65,7 @@ const WelcomeScreen = ({ onStart }) => {
 
     return (
         <motion.div
-            className="w-full h-[100dvh] flex flex-col items-center justify-end pb-12 overflow-hidden bg-no-repeat"
+            className="w-full h-[100dvh] flex flex-col items-center justify-end pb-6 overflow-hidden bg-no-repeat"
             style={{
                 backgroundImage: 'url(./assets/Quiz-bg.png)',
                 backgroundSize: '100% 100%',
@@ -114,6 +114,7 @@ const WelcomeScreen = ({ onStart }) => {
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-2">
+                                        <label htmlFor="lead-name" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Name</label>
                                         <input
                                             type="text"
                                             id="lead-name"
@@ -133,6 +134,7 @@ const WelcomeScreen = ({ onStart }) => {
                                     </div>
 
                                     <div className="space-y-2">
+                                        <label htmlFor="lead-phone" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Mobile Number</label>
                                         <input
                                             type="tel"
                                             id="lead-phone"

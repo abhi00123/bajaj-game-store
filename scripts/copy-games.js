@@ -188,8 +188,6 @@ const manifest = {
     gameId: "GAME_002",
     assets: [
       "assets/games/quiz-game/assets/bajaj.png",
-      "assets/games/quiz-game/assets/bg.png",
-      "assets/games/quiz-game/assets/gst.png",
     ],
   },
   "life-milestone-race": {

@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Share2, Phone, Calendar } from "lucide-react";
+import { buildShareUrl } from "../utils/crypto";
 import ScoreShield from "./common/ScoreShield";
 import BookingModal from "./BookingModal";
 import Confetti from "./common/Confetti";
@@ -50,7 +50,12 @@ export default function ResultScreen({ score, onRestart, onThankYou, firstName }
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: shareData.title,
+                    text: shareData.text
+                });
             } catch (err) {
                 console.log('Error sharing:', err);
             }

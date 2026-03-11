@@ -18,6 +18,7 @@ const ResultsScreen = ({ score, total, onRestart }) => {
     const [isBookingOpen, setIsBookingOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookingTermsAccepted, setBookingTermsAccepted] = useState(isTermsAccepted);
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
     const [bookingData, setBookingData] = useState({
         name: leadName || '',
         mobile_no: leadPhone || '',
@@ -48,10 +49,11 @@ const ResultsScreen = ({ score, total, onRestart }) => {
 
         if (navigator.share) {
             try {
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
                 await navigator.share({
                     title: 'GST Quiz',
-                    text: shareMessage,
-                    url: shareUrl,
+                    text: shareMessage
                 });
             } catch (error) {
                 console.log('Error sharing:', error);
@@ -261,6 +263,7 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     <div className="grid grid-cols-1 gap-4">
                                         <div className="space-y-1">
+                                            <label htmlFor="booking-name" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Name</label>
                                             <input
                                                 type="text"
                                                 id="booking-name"
@@ -280,6 +283,7 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                         </div>
 
                                         <div className="space-y-1">
+                                            <label htmlFor="booking-phone" className="text-sm font-bold text-gray-500 block text-left mb-1 ml-1">Mobile Number</label>
                                             <input
                                                 type="text"
                                                 id="booking-phone"
@@ -315,7 +319,7 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                                     setBookingData(prev => ({ ...prev, date: e.target.value }));
                                                     setErrors(prev => ({ ...prev, date: null }));
                                                 }}
-                                                className={`w-full bg-gray-50 border-2 rounded-2xl pl-11 pr-4 py-3 text-gray-800 font-bold focus:outline-none transition-colors appearance-none ${errors.date ? 'border-red-500' : 'border-slate-100 focus:border-blue-400'}`}
+                                                className={`block w-full min-h-[52px] bg-gray-50 border-2 rounded-2xl pl-11 pr-4 py-3 text-gray-800 font-bold focus:outline-none transition-colors appearance-none ${errors.date ? 'border-red-500' : 'border-slate-100 focus:border-blue-400'}`}
                                             />
                                             {errors.date && <p className="text-red-500 text-xs font-bold mt-1 ml-2">{errors.date}</p>}
                                         </div>
@@ -330,7 +334,7 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                                     setBookingData(prev => ({ ...prev, timeSlot: e.target.value }));
                                                     setErrors(prev => ({ ...prev, timeSlot: null }));
                                                 }}
-                                                className={`w-full bg-gray-50 border-2 rounded-2xl pl-11 pr-10 py-3 text-gray-800 font-bold focus:outline-none appearance-none transition-colors ${errors.timeSlot ? 'border-red-500' : 'border-slate-100 focus:border-blue-400'}`}
+                                                className={`block w-full min-h-[52px] bg-gray-50 border-2 rounded-2xl pl-11 pr-10 py-3 text-gray-800 font-bold focus:outline-none appearance-none transition-colors ${errors.timeSlot ? 'border-red-500' : 'border-slate-100 focus:border-blue-400'}`}
                                             >
                                                 <option value="">Choose a slot</option>
                                                 {timeSlots.map(slot => (
@@ -347,8 +351,8 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                             <div className={`shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all ${bookingTermsAccepted ? 'bg-brand-green border-brand-green' : 'border-slate-100 bg-gray-50'}`}>
                                                 {bookingTermsAccepted && <ShieldCheck className="w-5 h-5 text-white" />}
                                             </div>
-                                            <div className="text-[11px] text-gray-400 font-bold leading-tight underline underline-offset-2">
-                                                I accept the terms & conditions and acknowledge the privacy policy.
+                                            <div className="text-[11px] text-gray-400 font-bold leading-tight underline-offset-2">
+                                                I agree to the <span className="text-[#0066B2] underline cursor-pointer hover:text-[#004C85]" onClick={(e) => { e.stopPropagation(); setIsTermsOpen(true); }}>Terms & Conditions</span> and allow Bajaj Life Insurance to contact me even if registered on DND.
                                             </div>
                                         </div>
                                         {errors.terms && <p className="text-red-500 text-xs font-bold ml-2">{errors.terms}</p>}
@@ -363,6 +367,47 @@ const ResultsScreen = ({ score, total, onRestart }) => {
                                         {isSubmitting ? 'Booking...' : 'Confirm booking'}
                                     </motion.button>
                                 </form>
+                            </motion.div>
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
+
+            {/* Terms Modal via Radix Dialog for correct stacking */}
+            <Dialog.Root open={isTermsOpen} onOpenChange={setIsTermsOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]" />
+                    <Dialog.Content asChild aria-describedby={undefined}>
+                        <div className="fixed inset-0 z-[100] grid place-items-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="bg-white border-2 border-soft-gray rounded-[32px] p-8 w-full max-w-lg shadow-2xl relative"
+                            >
+                                <div className="flex justify-between items-center mb-4 border-b-2 border-slate-100 pb-2">
+                                    <Dialog.Title className="text-[#0066B2] text-xl font-black uppercase tracking-tight">
+                                        Terms & Conditions
+                                    </Dialog.Title>
+                                    <button
+                                        onClick={() => setIsTermsOpen(false)}
+                                        className="text-slate-400 hover:text-slate-600 transition-colors p-1"
+                                    >
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+                                <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2 text-slate-600 font-bold text-xs min-[375px]:text-sm leading-relaxed scrollbar-thin scrollbar-thumb-slate-200 text-left">
+                                    <p>I hereby authorize Bajaj Life Insurance Limited to call me on the contact number made available by me on the website with a specific request to call back. I further declare that, irrespective of my contact number being registered on National Customer Preference Register (NCPR) or on National Do Not Call Registry (NDNC), any call made, SMS or WhatsApp sent in response to my request shall not be construed as an Unsolicited Commercial Communication even though the content of the call may be for the purposes of explaining various insurance products and services or solicitation and procurement of insurance business.</p>
+                                    <p>Please refer to <a href="https://www.bajajallianzlife.com/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="text-[#0066B2] underline">BALIC Privacy Policy</a>.</p>
+                                </div>
+                                <div className="mt-6">
+                                    <button
+                                        onClick={() => { setIsTermsOpen(false); setBookingTermsAccepted(true); }}
+                                        className="w-full mt-6 py-3 bg-[#0066B2] text-white font-bold rounded-lg hover:bg-blue-700 transition-colors text-sm uppercase tracking-wider"
+                                    >
+                                        I Agree
+                                    </button>
+                                </div>
                             </motion.div>
                         </div>
                     </Dialog.Content>

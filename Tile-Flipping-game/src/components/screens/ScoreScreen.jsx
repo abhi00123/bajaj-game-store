@@ -83,7 +83,12 @@ export default function ScoreScreen({ showToast }) {
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: shareData.title,
+                    text: shareData.text
+                });
             } catch (err) {
                 console.log('Error sharing:', err);
             }

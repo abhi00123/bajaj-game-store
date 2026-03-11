@@ -36,7 +36,12 @@ const Results = ({ score, onReset, userInfo }) => {
 
         try {
             if (navigator.share) {
-                await navigator.share(shareData);
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: shareData.title,
+                    text: shareData.text
+                });
             } else {
                 await navigator.clipboard.writeText(`${shareData.text} Check it out here: ${shareData.url}`);
                 alert('Result copied to clipboard!');

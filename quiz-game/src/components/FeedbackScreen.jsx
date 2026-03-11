@@ -1,14 +1,27 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const FeedbackScreen = ({ isCorrect, explanation, onNext }) => {
+    const [showNextButton, setShowNextButton] = useState(false);
+
     useEffect(() => {
         const duration = 10000;
+
+        // Show next button after 2 seconds
+        const showButtonTimer = setTimeout(() => {
+            setShowNextButton(true);
+        }, 2000);
+
+        // Auto advance after full duration
         const timer = setTimeout(() => {
             onNext();
         }, duration);
-        return () => clearTimeout(timer);
+
+        return () => {
+            clearTimeout(showButtonTimer);
+            clearTimeout(timer);
+        };
     }, [onNext, isCorrect]);
 
     return (
@@ -52,15 +65,24 @@ const FeedbackScreen = ({ isCorrect, explanation, onNext }) => {
                         </div>
 
                         {/* Action Button */}
-                        <button
-                            onClick={onNext}
-                            className={`w-full font-black py-3 sm:py-4 px-6 rounded-2xl transition-all active:scale-[0.98] text-lg sm:text-xl mb-4 sm:mb-6 shrink-0 ${isCorrect
-                                ? 'bg-brand-blue text-white'
-                                : 'bg-red-500 text-white'
-                                }`}
-                        >
-                            Next
-                        </button>
+                        <div className="mb-4 sm:mb-6 shrink-0 min-h-[56px] sm:min-h-[64px]">
+                            <AnimatePresence>
+                                {showNextButton && (
+                                    <motion.button
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        onClick={onNext}
+                                        className={`w-full font-black py-3 sm:py-4 px-6 rounded-2xl transition-all active:scale-[0.98] text-lg sm:text-xl h-full ${isCorrect
+                                            ? 'bg-brand-blue text-white'
+                                            : 'bg-red-500 text-white'
+                                            }`}
+                                    >
+                                        Next
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         {/* Progress Capsule */}
                         <div className="w-full bg-gray-100 h-2 sm:h-3 rounded-full overflow-hidden shrink-0">

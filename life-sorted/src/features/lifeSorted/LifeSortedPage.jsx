@@ -6,7 +6,6 @@ import LevelReport from './components/LevelReport';
 import FinalScreen from './components/FinalScreen';
 import ThankYouScreen from './components/ThankYouScreen';
 import ShockOverlay from './components/ShockOverlay';
-import PouringStream from './components/PouringStream';
 import Toast from '../../components/ui/Toast';
 
 import Modal from './components/Modal';
@@ -23,7 +22,6 @@ import { X, ShieldCheck, Loader2 } from 'lucide-react';
 const LifeSortedPage = () => {
     const [gamePhase, setGamePhase] = useState('splash'); // splash | playing | shock | report | final | thanks
     const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
-    const [pouringState, setPouringState] = useState(null); // { sourceIndex, targetIndex, color, sourceX, sourceY, targetX, targetY }
     const tubeRefs = useRef([]);
 
     // Lead Gen State
@@ -61,77 +59,9 @@ const LifeSortedPage = () => {
     );
 
     const handleTubeClickWithAnimation = useCallback((index) => {
-        // FIXED: Block all interactions while a pour is in progress
-        if (engine.isWon || isShockActive || pouringState) return;
-
-        const sourceIndex = engine.selectedTube;
-
-        if (sourceIndex !== null && sourceIndex !== index) {
-            const sourceTube = engine.tubes[sourceIndex];
-            const targetTube = engine.tubes[index];
-            const capacity = LEVEL_CONFIGS[currentLevelIndex].capacity;
-
-            if (sourceTube.length > 0 && targetTube.length < capacity) {
-                // OLD RULE: Match top color. 
-                // NEW RULE: Allow any color pour (moveValidator handles this)
-                const validation = engine.validateMove(sourceIndex, index);
-
-                if (validation.valid) {
-                    const sourceTop = sourceTube[sourceTube.length - 1];
-                    const sourceRect = tubeRefs.current[sourceIndex]?.getBoundingClientRect();
-                    const targetRect = tubeRefs.current[index]?.getBoundingClientRect();
-
-                    if (sourceRect && targetRect) {
-                        const isRight = index > sourceIndex;
-                        const mouthXOffset = isRight ? -20 : 20;
-
-                        const dx = (targetRect.left + targetRect.width / 2) - (sourceRect.left + sourceRect.width / 2) + mouthXOffset;
-                        const dy = targetRect.top - sourceRect.top - 120;
-
-                        // Calculate how many segments will move
-                        const colorToMove = sourceTop.category;
-                        let movedCount = 0;
-                        const tempSource = [...sourceTube];
-                        while (tempSource.length > 0 && tempSource[tempSource.length - 1].category === colorToMove && (targetTube.length + movedCount) < capacity) {
-                            tempSource.pop();
-                            movedCount++;
-                        }
-
-                        setPouringState({
-                            sourceIndex,
-                            targetIndex: index,
-                            color: sourceTop.color,
-                            // Align stream start with the mouth of the TILTED tube
-                            sourceX: targetRect.left + targetRect.width / 2 + (isRight ? -40 : 40),
-                            sourceY: targetRect.top - 40,
-                            targetX: targetRect.left + targetRect.width / 2,
-                            targetY: targetRect.bottom - (targetTube.length * (targetRect.height / capacity)),
-                            dx,
-                            dy,
-                            movedCount,
-                            movedColor: sourceTop.color,
-                            isStreaming: false
-                        });
-
-                        // Phase 2: Start streaming after tilt starts (Impact Phase)
-                        setTimeout(() => {
-                            setPouringState(prev => prev ? { ...prev, isStreaming: true } : null);
-                        }, 400);
-
-                        // Phase 3: Complete transfer after enough volume has "flowed"
-                        setTimeout(() => {
-                            engine.handleTubeClick(index);
-                            setPouringState(null);
-                        }, 1300);
-
-                        return;
-                    }
-                }
-            }
-        }
-
+        if (engine.isWon || isShockActive) return;
         engine.handleTubeClick(index);
-    }, [engine, currentLevelIndex, isShockActive, pouringState]);
+    }, [engine, isShockActive]);
 
     const handleTimeUp = useCallback(() => {
         showToast(MESSAGE_LIBRARY.TIME_UP, 'error');
@@ -211,12 +141,10 @@ const LifeSortedPage = () => {
 
     const onLevelComplete = () => {
         timer.stop();
-        // If it's the last level, go straight to final
-        if (currentLevelIndex >= LEVEL_CONFIGS.length - 1) {
-            setGamePhase('final');
-        } else {
+        // 400ms delay as requested
+        setTimeout(() => {
             setGamePhase('report');
-        }
+        }, 400);
     };
 
     React.useEffect(() => {
@@ -242,16 +170,14 @@ const LifeSortedPage = () => {
     return (
         <GameLayout
             showTitle={false}
+            showHeader={gamePhase !== 'final'}
             variant={gamePhase === 'splash' ? 'welcome' : (gamePhase === 'playing' || gamePhase === 'final') ? 'gradient' : 'default'}
-            mainClassName={gamePhase === 'splash' ? 'justify-end pb-[28%]' : 'justify-center'}
-            headerRight={
-                gamePhase === 'playing' ? (
-                    <div className="text-right">
-                        <p className="text-[0.6rem] uppercase text-white/40 tracking-widest font-bold">Progress</p>
-                        <p className="text-xs font-bold text-teal">{engine.sortedCount} / {activeCategories.length} Sorted</p>
-                    </div>
-                ) : null
+            mainClassName={
+                gamePhase === 'splash' ? 'justify-end pb-[28%]' :
+                    gamePhase === 'final' ? 'justify-start overflow-y-auto overflow-x-hidden w-full px-0 pt-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]' :
+                        'justify-center'
             }
+            headerRight={null}
         >
             <Toast message={toast?.message} type={toast?.type} />
 
@@ -372,7 +298,7 @@ const LifeSortedPage = () => {
                     <h2 className="text-2xl font-black text-gray-800 mb-6 tracking-tight">
                         Terms & Conditions
                     </h2>
-                    <div className="text-sm text-gray-500 font-bold space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                    <div className="text-sm text-gray-500 font-bold space-y-4 max-h-[50dvh] overflow-y-auto pr-2">
                         <p>Privacy Policy & Terms of Use for Life Sorted 3D.</p>
                         <p>Your data stays secure and will only be used for providing personalized life planning insights.</p>
                     </div>
@@ -386,8 +312,6 @@ const LifeSortedPage = () => {
                         capacity={LEVEL_CONFIGS[currentLevelIndex].capacity}
                         selectedTube={engine.selectedTube}
                         onTubeClick={handleTubeClickWithAnimation}
-                        onUndo={engine.undo}
-                        onRestart={restartLevel}
                         timer={timer.timeLeft}
                         formatTime={timer.formatTime}
                         progress={timer.progress}
@@ -395,21 +319,18 @@ const LifeSortedPage = () => {
                         activeCategories={activeCategories}
                         moves={engine.moves}
                         currentLevel={currentLevelIndex + 1}
-                        pouringState={pouringState}
                         tubeRefs={tubeRefs}
                     />
                     <ShockOverlay isActive={isShockActive} onResolve={resolveShock} />
-                    {pouringState && <PouringStream {...pouringState} />}
                 </>
             )}
 
             {gamePhase === 'report' && (
                 <LevelReport
-                    level={currentLevelIndex + 1}
-                    moves={engine.moves}
-                    mistakes={engine.mistakes}
-                    sorted={engine.sortedCount}
-                    onNext={nextLevel}
+                    tubes={engine.tubes}
+                    isWin={engine.isWon}
+                    capacity={LEVEL_CONFIGS[currentLevelIndex].capacity}
+                    onNext={() => setGamePhase('final')}
                 />
             )}
 

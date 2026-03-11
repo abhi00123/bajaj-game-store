@@ -174,12 +174,12 @@ const FinancialTetrisPage = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="w-full relative h-full flex flex-col pt-16"
+                        className="w-full relative h-full flex flex-col pt-safe px-3"
                         onTouchStart={handleTouchStart}
                         onTouchMove={handleTouchMove}
                         onTouchEnd={handleTouchEnd}
                     >
-                        <div className="px-3">
+                        <div className="px-3 mt-16">
                             <ScoreDisplay
                                 score={linesCleared}
                                 timeLeft={timeLeft}

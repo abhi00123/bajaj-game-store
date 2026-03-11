@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { buildShareUrl } from '../../../utils/crypto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Phone, Calendar, X, RefreshCw } from 'lucide-react';
@@ -37,7 +37,14 @@ const ConversionScreen = ({ score, leadData, onBookSlot, onRestart }) => {
         const senderName = sessionStorage.getItem('gamification_emp_name') || '';
         const shareMessage = `Hi,\nI just experienced this eye-opening truth about life's uncertainties and protection.\nIt takes less than a minute — give it a try: ${shareUrl}\n\nRegards,\n${senderName}`.trim();
         if (navigator.share) {
-            try { await navigator.share({ title: 'Expect the Unexpected', text: shareMessage, url: shareUrl }); } catch { }
+            try {
+                // We exclude 'url' here because it's already included in the 'text' 
+                // and some platforms (Android/WhatsApp) append it twice if both are sent.
+                await navigator.share({
+                    title: 'Expect the Unexpected',
+                    text: shareMessage
+                });
+            } catch { }
         } else {
             try { await navigator.clipboard.writeText(shareMessage); } catch { }
         }

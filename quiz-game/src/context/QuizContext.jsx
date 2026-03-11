@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { getShuffledQuestions } from '../data/questions';
 import { useSound } from '../hooks/useSound';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -54,10 +54,15 @@ export const QuizProvider = ({ children }) => {
         playSound('start');
     }, [playSound]);
 
-    const handleAnswerSelect = useCallback((answerIndex) => {
-        if (selectedAnswer !== null) return;
+    const isProcessingRef = useRef(false);
 
+    const handleAnswerSelect = useCallback((answerIndex) => {
+        // Prevent double-clicks or rapid selections while React state updates
+        if (selectedAnswer !== null || isProcessingRef.current || showFeedback) return;
+
+        isProcessingRef.current = true;
         setSelectedAnswer(answerIndex);
+
         const selectedOptionText = currentQuestion.options[answerIndex];
         const isCorrect = selectedOptionText === currentQuestion.correctAnswer;
 
@@ -80,11 +85,15 @@ export const QuizProvider = ({ children }) => {
 
         setShowFeedback(true);
         setCurrentScreen(SCREENS.FEEDBACK);
-    }, [selectedAnswer, currentQuestion, playSound]);
+
+        // Reset ref to allow next interactions if necessary, 
+        // though typically it re-enables on next question
+    }, [selectedAnswer, currentQuestion, playSound, showFeedback]);
 
     const handleNextQuestion = useCallback(() => {
         setShowFeedback(false);
         setSelectedAnswer(null);
+        isProcessingRef.current = false;
 
         if (currentQuestionIndex < totalQuestions - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
@@ -109,6 +118,7 @@ export const QuizProvider = ({ children }) => {
         setUserAnswers([]);
         setSelectedAnswer(null);
         setShowFeedback(false);
+        isProcessingRef.current = false;
         playSound('start');
         // Note: we do NOT reset leadName/Phone here to allow direct replay as the same user
     }, [playSound]);
@@ -122,6 +132,7 @@ export const QuizProvider = ({ children }) => {
         setUserAnswers([]);
         setSelectedAnswer(null);
         setShowFeedback(false);
+        isProcessingRef.current = false;
         playSound('start');
         // Note: we do NOT reset leadName/Phone here to allow direct replay as the same user
     }, [playSound]);

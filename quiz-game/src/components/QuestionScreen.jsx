@@ -3,6 +3,8 @@ import QuizProgressBar from './QuizProgressBar';
 // Updated UI with enhanced option boxes and GST welcome image
 
 const QuestionScreen = ({ question, currentQuestion, totalQuestions, onAnswerSelect, selectedAnswer }) => {
+    // Fallback if the question hasn't loaded (prevents TypeError during rapid transitions)
+    if (!question) return null;
 
     return (
         <motion.div

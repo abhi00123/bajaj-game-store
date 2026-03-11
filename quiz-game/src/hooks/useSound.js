@@ -9,6 +9,9 @@ export const useSound = () => {
     const playSound = useCallback((soundType) => {
         if (!soundEnabled.current) return;
 
+        const AVAILABLE_SOUNDS = ['correct', 'incorrect'];
+        if (!AVAILABLE_SOUNDS.includes(soundType)) return;
+
         try {
             const audio = new Audio(`./sounds/${soundType}.mp3`);
             audio.volume = 0.5;
