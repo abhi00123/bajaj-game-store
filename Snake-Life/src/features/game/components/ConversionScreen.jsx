@@ -248,7 +248,7 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
 
             {/* Booking Modal */}
             <Modal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)}>
-                <div className="bg-[#0f172a] rounded-[32px] p-8 w-full max-w-md shadow-2xl border-2 border-slate-800 relative overflow-hidden my-auto text-left">
+                <div className="bg-[#0f172a] rounded-[32px] p-6 sm:p-8 w-full max-w-md shadow-2xl border-2 border-slate-800 relative overflow-hidden my-auto text-left">
                     <button
                         onClick={() => setIsBookingOpen(false)}
                         className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
@@ -266,6 +266,7 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
                     <form onSubmit={handleBookingSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 gap-4">
                             <div>
+                                <label htmlFor="name" className="text-sm font-bold text-slate-400 ml-1 block mb-1.5">Name</label>
                                 <input
                                     type="text"
                                     value={bookingData.name}
@@ -285,6 +286,7 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
                             </div>
 
                             <div>
+                                <label htmlFor="mobile" className="text-sm font-bold text-slate-400 ml-1 block mb-1.5">Mobile Number</label>
                                 <input
                                     type="text"
                                     value={bookingData.mobile_no}
@@ -306,8 +308,9 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
                             </div>
                         </div>
 
-                        <div className="flex gap-2">
-                            <div className="relative flex-1">
+                        <div>
+                            <label htmlFor="date" className="text-sm font-bold text-slate-400 ml-1 block mb-1.5">Booking Date</label>
+                            <div className="relative">
                                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none" />
                                 <input
                                     type="date"
@@ -326,25 +329,28 @@ const ConversionScreen = ({ score, total = 20, leadData, onRestart, onBookSlot }
                             </div>
                         </div>
 
-                        <div className="relative">
-                            <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none" />
-                            <select
-                                value={bookingData.timeSlot}
-                                onChange={(e) => {
-                                    setBookingData(prev => ({ ...prev, timeSlot: e.target.value }));
-                                    setErrors(prev => ({ ...prev, timeSlot: null }));
-                                }}
-                                id="timeSlot"
-                                name="timeSlot"
-                                className={`w-full bg-slate-900 border-2 rounded-2xl pl-11 pr-10 py-3 text-white font-bold focus:outline-none focus:border-blue-500 appearance-none transition-colors ${errors.timeSlot ? 'border-red-500' : 'border-slate-800'}`}
-                            >
-                                <option value="" className="bg-slate-950 text-white">Choose a slot</option>
-                                {timeSlots.map(slot => (
-                                    <option key={slot} value={slot} className="bg-slate-950 text-white">{slot}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
-                            {errors.timeSlot && <p className="text-red-500 text-xs font-bold mt-1 ml-2">{errors.timeSlot}</p>}
+                        <div>
+                            <label htmlFor="timeSlot" className="text-sm font-bold text-slate-400 ml-1 block mb-1.5">Preferred Time Slot</label>
+                            <div className="relative">
+                                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none" />
+                                <select
+                                    value={bookingData.timeSlot}
+                                    onChange={(e) => {
+                                        setBookingData(prev => ({ ...prev, timeSlot: e.target.value }));
+                                        setErrors(prev => ({ ...prev, timeSlot: null }));
+                                    }}
+                                    id="timeSlot"
+                                    name="timeSlot"
+                                    className={`w-full bg-slate-900 border-2 rounded-2xl pl-11 pr-10 py-3 text-white font-bold focus:outline-none focus:border-blue-500 appearance-none transition-colors ${errors.timeSlot ? 'border-red-500' : 'border-slate-800'}`}
+                                >
+                                    <option value="" className="bg-slate-950 text-white">Choose a slot</option>
+                                    {timeSlots.map(slot => (
+                                        <option key={slot} value={slot} className="bg-slate-950 text-white">{slot}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                                {errors.timeSlot && <p className="text-red-500 text-xs font-bold mt-1 ml-2">{errors.timeSlot}</p>}
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-2">
