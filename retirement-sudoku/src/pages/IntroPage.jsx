@@ -250,7 +250,7 @@ const IntroPage = memo(function IntroPage() {
                                         Welcome!
                                     </h2>
                                     <p className="text-slate-500 font-bold text-xs min-[375px]:text-sm sm:text-base">
-                                        Enter your details to start.
+                                        Enter your details to start
                                     </p>
                                 </div>
 

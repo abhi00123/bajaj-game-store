@@ -124,7 +124,7 @@ const Intro = ({ onStart, setUserInfo, userInfo }) => {
                                     <span className="text-4xl">👋</span>
                                 </div>
                                 <h2 className="text-[#0066B2] text-2xl font-black mb-1">Welcome!</h2>
-                                <p className="text-slate-500 font-bold text-base">Enter your details to start.</p>
+                                <p className="text-slate-500 font-bold text-base">Enter your details to start</p>
                             </div>
 
                             <form onSubmit={handleNameSubmit} className="space-y-4">

@@ -252,7 +252,7 @@ const IntroScreen = ({ onStart }) => {
                                     color: '#64748b',
                                     fontWeight: 700,
                                     fontSize: '13px',
-                                }}>Enter your details to start.</p>
+                                }}>Enter your details to start</p>
                             </div>
 
                             {/* Form */}

@@ -69,6 +69,7 @@ export function useBombermanEngine() {
     const floatIdRef = useRef(0);
     const lastTimeRef = useRef(performance.now());
     const isInvulnerableRef = useRef(false);
+    const activePraiseRef = useRef(null); // Ref to track popup for pausing
 
     const timeFreezeEndRef = useRef(0);
     const multiShieldEndRef = useRef(0);
@@ -133,11 +134,13 @@ export function useBombermanEngine() {
     const showPraise = useCallback((customMsg) => {
         const msg = customMsg || PRAISE_MESSAGES[Math.floor(Math.random() * PRAISE_MESSAGES.length)];
         setActivePraise(msg);
+        activePraiseRef.current = msg; // Update ref for pausing
 
         if (praiseTimeoutRef.current) clearTimeout(praiseTimeoutRef.current);
         praiseTimeoutRef.current = setTimeout(() => {
             setActivePraise(null);
-        }, 3000);
+            activePraiseRef.current = null;
+        }, 2200); // Shorter popup time speeds up gameplay since it now pauses
     }, []);
 
     // ── Damage ─────────────────────────────────────────────────────
@@ -183,6 +186,14 @@ export function useBombermanEngine() {
     // ── Game Loop ──────────────────────────────────────────────────
     const gameLoop = useCallback((timestamp) => {
         if (!isPlayingRef.current) return;
+
+        // Pause time, monsters, shields when a popup (Praise) is on screen
+        if (activePraiseRef.current) {
+            lastTimeRef.current = timestamp; // Prevent huge delta build-up after unpause
+            gameLoopRef.current = requestAnimationFrame(gameLoop);
+            return;
+        }
+
         const delta = timestamp - lastTimeRef.current;
         lastTimeRef.current = timestamp;
         deltaRef.current += delta;
@@ -243,6 +254,7 @@ export function useBombermanEngine() {
     // ── Timer ──────────────────────────────────────────────────────
     useEffect(() => {
         if (gamePhase !== GAME_PHASES.PLAYING) return;
+        if (activePraise) return; // Do not decrement timer while popup is active!
 
         timerRef.current = setInterval(() => {
             setTimeLeft(prev => {
@@ -259,7 +271,7 @@ export function useBombermanEngine() {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [gamePhase]);
+    }, [gamePhase, activePraise]);
 
     // ── Cleanup ────────────────────────────────────────────────────
     useEffect(() => {
@@ -272,7 +284,7 @@ export function useBombermanEngine() {
 
     // ── Movement ───────────────────────────────────────────────────
     const movePlayer = useCallback((direction) => {
-        if (!isPlayingRef.current) return;
+        if (!isPlayingRef.current || activePraiseRef.current) return; // Prevent movement during popup
 
         const now = Date.now();
         if (now - lastMoveRef.current < MOVE_COOLDOWN) return;
@@ -370,7 +382,7 @@ export function useBombermanEngine() {
 
     // ── Shield Action ──────────────────────────────────────────────
     const handleAction = useCallback(() => {
-        if (!isPlayingRef.current) return;
+        if (!isPlayingRef.current || activePraiseRef.current) return; // Prevent action during popup
         const isMulti = Date.now() < multiShieldEndRef.current;
         fireShield(playerPosRef.current.row, playerPosRef.current.col, lastDirection, isMulti);
     }, [fireShield, lastDirection]);

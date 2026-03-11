@@ -41,7 +41,7 @@ export default function ResultScreen({ score, onRestart, onThankYou, firstName }
     const handleShare = async () => {
         const shareUrl = buildShareUrl() || window.location.href;
         const senderName = sessionStorage.getItem('gamification_emp_name') || '';
-        const shareText = `Hi,\nI just tried this word-unscramble challenge on life insurance and scored ${Math.round(score)}/5.\nSee if you can beat my score — try it here: ${shareUrl}\n\n${senderName}`.trim();
+        const shareText = `Hi,\nI just tried this word-unscramble challenge on life insurance and scored ${(score)}/5.\nSee if you can beat my score — try it here: ${shareUrl}\n\n${senderName}`.trim();
         const shareData = {
             title: 'Unscrambled Financial Words',
             text: shareText,
@@ -156,7 +156,7 @@ export default function ResultScreen({ score, onRestart, onThankYou, firstName }
                         className="bg-blue-900/30 border border-white/10 rounded-lg p-2.5 mx-1 backdrop-blur-sm"
                     >
                         <p className="text-white/90 text-xs leading-tight font-medium">
-                            "To know more about insurance and savings products, please connect with our relationship manager."
+                            "To know more about insurance and savings products, please connect with our relationship manager"
                         </p>
                     </motion.div>
 
@@ -178,20 +178,20 @@ export default function ResultScreen({ score, onRestart, onThankYou, firstName }
                         BOOK SLOT
                     </button>
 
+                    {/* Try Again Button (Above Disclaimer) */}
+                    <button
+                        onClick={onRestart}
+                        className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors underline underline-offset-4 mt-2"
+                    >
+                        Try Again
+                    </button>
+
                     {/* Disclaimer */}
                     <div className="w-full px-6 opacity-40 mt-4">
                         <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter">
                             <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
                         </p>
                     </div>
-
-                    {/* Try Again Button (Small - At Bottom) */}
-                    <button
-                        onClick={onRestart}
-                        className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors underline underline-offset-4 mt-1"
-                    >
-                        Try Again
-                    </button>
                 </div>
             </div>
 

@@ -227,13 +227,6 @@ const ResultScreen = memo(function ResultScreen({
 
                 {/* ─── Bottom Actions Block ─── */}
                 <div className="w-full flex flex-col items-center mt-12 mb-2 gap-8">
-                    {/* Disclaimer */}
-                    <div className="w-full px-6 opacity-40">
-                        <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter">
-                            <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                        </p>
-                    </div>
-
                     {/* Try Again */}
                     <button
                         onClick={onRestart}
@@ -242,8 +235,15 @@ const ResultScreen = memo(function ResultScreen({
                         <div className="p-2 border border-blue-300/30 rounded-full group-hover:bg-white/10 transition-colors">
                             <RotateCcw className="w-[18px] h-[18px]" strokeWidth={2.5} />
                         </div>
-                        <span className="text-[12px] sm:text-[14px] font-black uppercase tracking-[0.3em]">TRY AGAIN</span>
+                        <span className="text-[12px] sm:text-[14px] font-black uppercase tracking-[0.3em] underline underline-offset-4">TRY AGAIN</span>
                     </button>
+
+                    {/* Disclaimer */}
+                    <div className="w-full px-6 opacity-40">
+                        <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter pb-4">
+                            <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                        </p>
+                    </div>
                 </div>
             </div>
 

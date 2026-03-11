@@ -109,7 +109,7 @@ const EntryPopup = memo(function EntryPopup({ onSubmit, onClose }) {
                             <span className="text-2xl min-[375px]:text-3xl sm:text-4xl">👋</span>
                         </div>
                         <h2 className="text-[#0066B2] text-lg min-[375px]:text-xl sm:text-2xl font-black mb-1">Welcome!</h2>
-                        <p className="text-slate-500 font-bold text-xs min-[375px]:text-sm sm:text-base">Enter your details to start.</p>
+                        <p className="text-slate-500 font-bold text-xs min-[375px]:text-sm sm:text-base">Enter your details to start</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-3 min-[375px]:space-y-4">

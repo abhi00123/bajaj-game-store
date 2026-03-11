@@ -165,12 +165,12 @@ const QuestionScreen = memo(function QuestionScreen({
                             </span>
                             <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
                                 <circle
-                                    cx="29" cy="29" r="26"
-                                    fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="3"
+                                    cx="30" cy="30" r="26"
+                                    fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="4"
                                 />
                                 <circle
-                                    cx="29" cy="29" r="26"
-                                    fill="none" stroke="#fff" strokeWidth="3"
+                                    cx="30" cy="30" r="26"
+                                    fill="none" stroke="#fff" strokeWidth="4"
                                     strokeDasharray={2 * Math.PI * 26}
                                     strokeDashoffset={2 * Math.PI * 26 * (1 - timerProgress / 100)}
                                     strokeLinecap="round"

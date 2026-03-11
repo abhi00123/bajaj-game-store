@@ -10,7 +10,7 @@ import styles from './LeadModal.module.css';
 export default function LeadModal({
     onClose,
     title = "Welcome!",
-    subtitle = "Enter your details to start.",
+    subtitle = "Enter your details to start",
     shouldSubmit = true,
     summaryDtls = "Lead from Welcome Screen",
     isBooking = false

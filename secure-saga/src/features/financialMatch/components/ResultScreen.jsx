@@ -119,8 +119,8 @@ const ResultScreen = ({
         }
     };
 
-    // Styling logic — SINGLE PAGE, NO SCROLL
-    const ghibliCardClass = "w-full h-[100dvh] overflow-hidden flex flex-col items-center px-4 py-2 sm:py-4 relative";
+    // Styling logic
+    const ghibliCardClass = "w-full min-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar flex flex-col items-center px-4 py-2 sm:py-4 relative";
 
     return (
         <div className={ghibliCardClass} style={{
@@ -148,13 +148,13 @@ const ResultScreen = ({
                     </div>
 
                     {/* Speedometer - Better Scaling and Positioning */}
-                    <div className="relative transform scale-[0.55] xs:scale-[0.65] sm:scale-95 -my-14 xs:-my-10 sm:-my-2 origin-center">
+                    <div className="relative transform scale-[0.55] xs:scale-[0.65] sm:scale-95 -mt-10 mb-0 xs:-mt-8 xs:mb-0 sm:-my-2 origin-center">
                         <Speedometer score={displayScore} />
                     </div>
                 </div>
 
                 {/* BLOCK 2: Feedback & Headline (Middle) */}
-                <div className="flex flex-col items-center gap-1 sm:gap-4 px-2 -mt-2 xs:mt-0 sm:mt-4">
+                <div className="flex flex-col items-center gap-1 sm:gap-4 px-2 -mt-4 xs:-mt-2 sm:mt-2">
                     <p className="text-white font-black italic text-[16px] sm:text-[22px] leading-tight px-4 drop-shadow-lg text-center max-w-[360px]">
                         "{resultContent.headline}"
                     </p>
@@ -206,18 +206,18 @@ const ResultScreen = ({
                         </button>
                     </div>
 
-                    <div className="w-full px-4">
-                        <p className="text-[7.5px] sm:text-[9px] text-white/40 leading-tight text-center font-medium max-w-[420px] mx-auto">
-                            <span className="font-bold whitespace-nowrap">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                        </p>
-                    </div>
-
                     <button
                         onClick={onRestart}
-                        className="text-white/30 hover:text-white text-[9px] sm:text-xs font-black tracking-[0.2em] transition-colors flex items-center justify-center gap-1 active:scale-95 py-1"
+                        className="text-white/30 hover:text-white text-[9px] sm:text-xs font-black tracking-[0.2em] transition-colors flex items-center justify-center gap-1 active:scale-95 py-1 mb-2 mt-1 underline underline-offset-4"
                     >
                         <RefreshCw className="w-3.5 h-3.5" /> Try Again
                     </button>
+
+                    <div className="w-full px-4 mt-auto">
+                        <p className="text-[7.5px] sm:text-[9px] text-white/40 leading-tight text-center font-medium max-w-[420px] mx-auto pb-4">
+                            <span className="font-bold whitespace-nowrap">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                        </p>
+                    </div>
                 </div>
 
             </div>

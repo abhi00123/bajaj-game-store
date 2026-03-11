@@ -43,21 +43,17 @@ Object.values(audioCache).forEach(audio => {
     audio.preload = 'auto'; // ensure ready
 });
 
-// Helper to play sound (clones to allow overlapping)
+// Helper to play sound (re-uses instance to prevent cloneNode memory leaks on low-end Android)
 const playSound = (type) => {
     if (type === 'swap' || type === 'burst') {
         const sound = audioCache[type];
         if (sound) {
-            const clone = sound.cloneNode();
-            clone.volume = 0.6;
-            clone.play().catch(() => { });
+            // Reset to start instead of cloning
+            sound.currentTime = 0;
+            sound.play().catch(() => { });
         }
     }
-};
-
-
-
-export function useMatchGame() {
+}; export function useMatchGame() {
     const [state, dispatch] = useReducer(gameReducer, initialState);
 
     const timerRef = useRef(null);
@@ -347,7 +343,8 @@ export function useMatchGame() {
             dispatch({ type: A.CLEAR_EXPLOSIONS });
 
             // Praise Logic: Strictly after cascade settles
-            if (chainStep >= 2 || totalPointsThisChain >= 25) {
+            // Increased thresholds to reduce frequency of praising
+            if (chainStep >= 3 || totalPointsThisChain >= 45) {
                 await new Promise((res) => setTimeout(res, 100));
                 showPraise();
             }
@@ -357,7 +354,12 @@ export function useMatchGame() {
 
     const showPraise = useCallback(() => {
         const msg = PRAISE_MESSAGES[Math.floor(Math.random() * PRAISE_MESSAGES.length)];
-        speakPraise(msg);
+
+        // Randomize speech synthesis to 30% chance to prevent stuttering on Android
+        if (Math.random() > 0.7) {
+            speakPraise(msg);
+        }
+
         dispatch({ type: A.SHOW_PRAISE, payload: msg });
 
         if (praiseTimeoutRef.current) clearTimeout(praiseTimeoutRef.current);
