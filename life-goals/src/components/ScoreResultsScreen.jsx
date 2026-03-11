@@ -368,7 +368,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                             </div>
                             <div className="space-y-0.5">
                                 <div className="relative">
-                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none" />
+                                    <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none z-10" />
                                     <Input
                                         id="booking-date"
                                         name="date"
@@ -377,11 +377,11 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                         max={maxDate}
                                         value={formData.date}
                                         onChange={e => updateField('date', e.target.value)}
-                                        className={`block w-full min-h-[52px] bg-slate-50 h-11 border-2 ${errors.date ? 'border-red-400' : 'border-slate-100'} text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-0 text-sm font-bold pl-11 pr-4`}
+                                        className={`w-full appearance-none bg-slate-50 h-11 border-2 ${errors.date ? 'border-red-400' : 'border-slate-100'} text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-0 text-sm font-bold pl-4 pr-11`}
                                     />
                                 </div>
                                 <div className="min-h-[18px]">
-                                    {errors.date && <p className="text-red-500 text-[10px] font-black uppercase tracking-wider ml-2">{errors.date}</p>}
+                                    {errors.date && <p className="text-red-500 text-[10px] font-black uppercase tracking-wider ml-1">{errors.date}</p>}
                                 </div>
                             </div>
                             <div className="space-y-0.5">
@@ -389,7 +389,7 @@ const ScoreResultsScreen = ({ score, userName, userPhone, onBookSlot, onRestart 
                                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none z-10" />
                                     <div
                                         onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
-                                        className={`w-full min-h-[52px] bg-slate-50 h-11 border-2 ${errors.time ? 'border-red-400' : 'border-slate-100'} text-slate-800 text-sm font-bold pl-11 pr-10 rounded-md cursor-pointer flex items-center justify-between ${isTimeDropdownOpen ? 'border-blue-500 ring-4 ring-blue-100' : ''}`}
+                                        className={`w-full bg-slate-50 h-11 border-2 ${errors.time ? 'border-red-400' : 'border-slate-100'} text-slate-800 text-sm font-bold pl-11 pr-10 rounded-md cursor-pointer flex items-center justify-between ${isTimeDropdownOpen ? 'border-blue-500 ring-4 ring-blue-100' : ''}`}
                                     >
                                         <span className={formData.time ? 'text-slate-800' : 'text-slate-400'}>
                                             {formData.time || "Choose a slot"}
