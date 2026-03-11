@@ -150,12 +150,11 @@ const GameGrid = memo(function GameGrid({
 
     return (
         <div className="relative w-full max-w-[30rem] mx-auto px-4 py-6">
-            {/* Grid glow behind */}
+            {/* Grid glow behind without heavy blur filter */}
             <div
                 className="absolute inset-0 -z-10"
                 style={{
                     background: 'radial-gradient(circle at center, rgba(59,130,246,0.12) 0%, transparent 75%)',
-                    filter: 'blur(2rem)',
                 }}
             />
 
@@ -295,7 +294,7 @@ const GameGrid = memo(function GameGrid({
                                     boxShadow: 'inset 0 0 10px rgba(239,68,68,0.8), 0 0 12px rgba(239,68,68,0.5)',
                                 }}
                             >
-                                <div className="w-1/2 h-1/2 bg-red-500/60 rounded-full animate-pulse blur-[2px]" />
+                                <div className="w-1/2 h-1/2 bg-red-500/60 rounded-full animate-pulse" />
                             </div>
                         </div>
                     </div>

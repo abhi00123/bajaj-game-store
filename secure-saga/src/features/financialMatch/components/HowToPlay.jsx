@@ -92,8 +92,8 @@ const HowToPlay = memo(function HowToPlay({ onStart }) {
                             <SwapIcon />
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-white font-black text-sm uppercase tracking-wide mb-1">Swap Adjacent Tiles</h3>
-                                <p className="text-blue-200/60 text-base leading-tight font-medium">
-                                    Tap two neighboring tiles to swap them matches of 3 or more.
+                                <p className="text-blue-200/60 text-xs leading-tight font-medium">
+                                    Tap two neighboring tiles to swap them in matches of 3 or more.
                                 </p>
                             </div>
                         </div>
@@ -186,7 +186,6 @@ const HowToPlay = memo(function HowToPlay({ onStart }) {
                                     style={{ background: g.bg, boxShadow: `0 2px 0 ${g.border}` }}></div>
                                 <div className="flex-1 border-b border-white/5 pb-2">
                                     <span className="text-white text-sm font-bold uppercase tracking-wide block">{g.label}</span>
-                                    <span className="text-white/40 text-xs font-medium uppercase tracking-wider">Match tiles to fill</span>
                                 </div>
                             </div>
                         ))}

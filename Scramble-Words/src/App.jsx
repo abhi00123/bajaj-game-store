@@ -96,7 +96,7 @@ function App() {
             <ResultScreen
               score={score}
               firstName={userName}
-              onRestart={restartGame}
+              onRestart={replayGame}
               onThankYou={showThankYou}
             />
           </motion.div>

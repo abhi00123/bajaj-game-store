@@ -28,11 +28,11 @@ const GameOverOverlay = () => {
             timers.push(t);
         });
 
-        // Auto-transition to result screen 2s after last message
+        // Auto-transition to result screen 5s after last message
         const lastMsg = GAME_OVER_MESSAGES[GAME_OVER_MESSAGES.length - 1];
         const autoTransition = setTimeout(() => {
             setStatus(GAME_STATUS.CTA);
-        }, lastMsg.delay + 800 + 3000);
+        }, lastMsg.delay + 800 + 5000);
         timers.push(autoTransition);
 
         return () => {

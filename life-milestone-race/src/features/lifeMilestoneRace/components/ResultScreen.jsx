@@ -219,7 +219,7 @@ const ResultScreen = ({
                     className="bg-white p-3 sm:p-5 shadow-[0_15px_40px_rgba(0,0,0,0.5)] border-4 border-white/50 mb-2 shrink-0 rounded-sm"
                 >
                     <p className="text-slate-600 text-[14px] sm:text-sm font-bold text-center mb-2 leading-relaxed">
-                        To secure your milestones from real life risk.Connect with our relationship manager
+                        To secure your milestones from real life risk. Connect with our relationship manager
                     </p>
 
                     {/* Call Action */}
@@ -243,21 +243,21 @@ const ResultScreen = ({
                     </button>
                 </motion.div>
 
-                {/* Disclaimer */}
-                <div className="w-full px-6 opacity-40 mt-4">
-                    <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter">
-                        <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
-                    </p>
-                </div>
-
-                {/* Restart Option */}
-                <div className="shrink-0 text-center pb-4">
+                {/* Restart Option (Moved Above Disclaimer) */}
+                <div className="shrink-0 text-center mt-2 mb-4">
                     <button
                         onClick={onRestart}
-                        className="text-blue-100 hover:text-white text-[11px] sm:text-sm font-black uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 mx-auto drop-shadow-md"
+                        className="text-blue-100 hover:text-white text-[11px] sm:text-sm font-black uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 mx-auto drop-shadow-md underline underline-offset-4"
                     >
                         <RefreshCw className="w-4 h-4" /> RETAKE QUIZ
                     </button>
+                </div>
+
+                {/* Disclaimer */}
+                <div className="w-full px-6 opacity-40 mt-2 mb-4">
+                    <p className="text-[7px] sm:text-[8px] text-white leading-relaxed text-center font-bold max-w-[380px] mx-auto uppercase tracking-tighter">
+                        <span className="opacity-60 underline mr-1">Disclaimer:</span> The results shown in this game are indicative and based solely on the information provided by the participant. They are intended for engagement and awareness purposes only and do not constitute financial advice or a recommendation to purchase any life insurance product. Participants should seek independent professional advice before making any financial or insurance decisions. While due care has been taken in designing the game, Bajaj Life Insurance Ltd. assumes no liability for its outcomes.
+                    </p>
                 </div>
 
             </div>

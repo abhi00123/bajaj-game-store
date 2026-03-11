@@ -103,11 +103,17 @@ const StageSelection = memo(function StageSelection({ onSelectStage }) {
                     const isSelected = selected === stage.id;
                     const alignment = ALIGNMENT_PATTERN[index] || 'justify-center';
 
+                    // Custom vertical offsets to prevent visual crowding
+                    // Using relative positioning because Framer Motion's inline `y: 0` overrides Tailwind transform classes
+                    let customOffset = '';
+                    if (index === 1) customOffset = 'relative -top-8 sm:-top-10'; // Marriage: move up toward First Job
+                    if (index === 3) customOffset = 'relative top-8 sm:top-10 left-4 sm:left-6';   // Mid-Career: move down and slightly right
+
                     return (
                         <motion.div
                             key={stage.id}
                             variants={cardVariants}
-                            className={`flex ${alignment} w-full z-10`}
+                            className={`flex ${alignment} w-full z-10 ${customOffset}`}
                         >
                             <div
                                 className={`glossy-card ${isSelected ? 'glossy-selected' : ''} w-[8.5rem] sm:w-[10rem] p-2 sm:p-3 rounded-2xl sm:rounded-3xl flex flex-col items-center gap-1 sm:gap-1.5 cursor-pointer`}
@@ -159,7 +165,7 @@ const StageSelection = memo(function StageSelection({ onSelectStage }) {
                     id="btn-confirm-stage"
                 >
                     BEGIN RACE
-                    <span className="material-symbols-outlined text-[1.5rem] sm:text-[1.875rem]">chevron_right</span>
+                    <span className="material-symbols-outlined text-[1.5rem] sm:text-[1.875rem]"></span>
                 </button>
             </motion.div>
         </div>
