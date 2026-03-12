@@ -177,6 +177,15 @@ const BalanceBuilderPage = memo(function BalanceBuilderPage() {
 
     // ── Handlers ──────────────────────────────────────────────────
 
+    const handleEntryDone = useCallback(
+        async (name, mobile) => {
+            handleUserInteraction();
+            await handleEntrySubmit(name, mobile);
+            setShowEntry(false);
+        },
+        [handleEntrySubmit, handleUserInteraction]
+    );
+
     const handleLandingStart = useCallback(() => {
         handleUserInteraction();
         // Lead popup disabled — start game directly
@@ -186,15 +195,6 @@ const BalanceBuilderPage = memo(function BalanceBuilderPage() {
     const handleEntryClose = useCallback(() => {
         setShowEntry(false);
     }, []);
-
-    const handleEntryDone = useCallback(
-        async (name, mobile) => {
-            handleUserInteraction();
-            await handleEntrySubmit(name, mobile);
-            setShowEntry(false);
-        },
-        [handleEntrySubmit, handleUserInteraction]
-    );
 
     return (
         <div
